@@ -46,7 +46,9 @@ const isMatch = await bcrypt.compare(password, findUser.password);
 if (!isMatch)
     return res.status(400).json({message:"Invalid credentials"})
 
-const token = jwt.sign({id: findUser._id , isAdmin : findUser.isAdmin}, process.env.JWT_SECRET , {expiresIn: '5d'});
+const token = jwt.sign({id: findUser._id , isAdmin : findUser.isAdmin},
+     process.env.JWT_SECRET , 
+     {expiresIn: '5d'});
 
 if(token)
     res.status(200).json({token , user: findUser}) ;

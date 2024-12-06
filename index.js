@@ -30,14 +30,39 @@ app.use(express.json());
 app.use("/api/auth", Auth);
 app.use("/api/users", User);
 
+const users = {};
+
 io.on('connection', (socket) => {
-  console.log('Client connected');
-  socket.on('message', (message) => {
-    console.log('Message received:', message);
-    io.emit('message', message);
+  console.log('A user connected:', socket.id);
+
+  socket.on('setName', (name) => {
+    users[socket.id] = name;
+    io.emit('userConnected', { id: socket.id, name });
+    console.log(`${name} connected (${socket.id})`);
   });
+
+  socket.on('typing', (isTyping) => {
+    const name = users[socket.id];
+    if (name) {
+      socket.broadcast.emit('typing', { name, isTyping });
+    }
+  });
+
+  socket.on('message', (message) => {
+    const name = users[socket.id];
+    if (name) {
+      io.emit('message', { name, message });
+      console.log(`${name}: ${message}`);
+    }
+  });
+
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    const name = users[socket.id];
+    if (name) {
+      io.emit('userDisconnected', { id: socket.id, name });
+      console.log(`${name} disconnected (${socket.id})`);
+      delete users[socket.id];
+    }
   });
 });
 
