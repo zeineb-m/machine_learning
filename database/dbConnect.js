@@ -6,5 +6,7 @@ try{
     console.log(`MongoDB connected : ${connection.host}`)
 }catch(error){
     console.log(error)
+
 }
+
 }

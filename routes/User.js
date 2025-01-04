@@ -1,7 +1,9 @@
-import { Router } from 'express';
-const router = Router();
+
 import { getAllUsers , getUserById , deleteUserById} from '../controllers/User.js';
 import { verify , verifyAdmin } from '../middleware/verifToken.js';
+import { Router } from 'express';
+const router = Router();
+
 
 router.route('/').get(verifyAdmin ,verify , getAllUsers);
 router.route('/:id').get(verify, getUserById);

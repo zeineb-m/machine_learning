@@ -2,10 +2,12 @@ import express from 'express';
 import { configDotenv } from 'dotenv';
 import Auth from './routes/Auth.js';
 import User from './routes/User.js';
+import TicketRoute from './routes/TicketRoute.js';
 import { Server as SocketIOServer } from 'socket.io';
 import { connectDatabase } from './database/dbConnect.js';
 import http from "http";
 import cors from "cors";
+import { Ticket } from './models/Ticket.js';
 
 connectDatabase();
 
@@ -29,6 +31,7 @@ app.use(express.json());
 
 app.use("/api/auth", Auth);
 app.use("/api/users", User);
+app.use("/api/tickets", TicketRoute);
 
 const users = {};
 
@@ -64,7 +67,17 @@ io.on('connection', (socket) => {
       delete users[socket.id];
     }
   });
+
+  socket.on('demande' , async () => {
+    const tickets = await Ticket.find({capacity: 0});
+    io.emit('ticketsWhoHave0Capacity', tickets);
+    console.log('Tickets with 0 capacity:', tickets);
+  })
+
 });
+
+
+
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
