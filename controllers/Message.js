@@ -1,4 +1,5 @@
 import Message from "../models/Message.js";
+import User from "../models/User.js";
 
 export const addMessage = async (req , res)=> {
     try {
@@ -61,3 +62,33 @@ export const deleteMessage = async (req , res)=> {
 }
 
 
+export const getMessagesByUser = async (req , res)=> {
+const idUser = req.params.idUser ; 
+try {
+const user = await User.findById(idUser); 
+if(!user) 
+    return res.status(404).json({message: "User not found"});
+
+const messages = await Message.find({user: idUser});
+
+res.status(200).json(messages);
+
+}catch(error) {
+    res.status(500).json({message: error.message})
+}
+}
+
+export const getMessageBetweenUsers= async (req , res)=> {
+const idTo = req.params.idTo ;
+const myId = req.params.myId ;
+try {
+const userTo = await User.findById(idTo) ;
+const me = await User.findById(myId) ;
+if(!userTo || !me) return res.status(404).json({message: "User not found"}) ;
+
+const messages = await Message.find({$or: [{user: myId, recipient: idTo}, {user: idTo, recipient: myId}]})
+res.status(200).json(messages);
+}catch(error) {
+    res.status(500).json({message : error.message})
+}
+}
