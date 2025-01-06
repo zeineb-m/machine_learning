@@ -2,6 +2,7 @@ import express from 'express';
 import { configDotenv } from 'dotenv';
 import Auth from './routes/Auth.js';
 import User from './routes/User.js';
+import PostRoutes from "./routes/PostRoutes.js"
 import TicketRoute from './routes/TicketRoute.js';
 import { Server as SocketIOServer } from 'socket.io';
 import { connectDatabase } from './database/dbConnect.js';
@@ -32,6 +33,7 @@ app.use(express.json());
 app.use("/api/auth", Auth);
 app.use("/api/users", User);
 app.use("/api/tickets", TicketRoute);
+app.use("/api/posts", PostRoutes);
 
 const users = {};
 
@@ -74,7 +76,21 @@ io.on('connection', (socket) => {
     console.log('Tickets with 0 capacity:', tickets);
   })
 
+  socket.on('getList' , async ()=> {
+    const tickets = await Ticket.find();
+    io.emit('ticketsList', tickets);
+    console.log('All Tickets list:', tickets);
+  })
+
+
+  socket.on('sendMessage' , async(message)=> {
+    io.emit('sendMessage', message);
+    console.log('Message:', message) ;
+  })
+
 });
+
+
 
 
 

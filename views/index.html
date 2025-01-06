@@ -49,6 +49,7 @@
       const typingIndicator = document.getElementById('typing');
       typingIndicator.textContent = isTyping ? `${name} is typing...` : '';
     });
+    
     function addSystemMessage(message) {
       const newMessage = document.createElement('li');
       newMessage.textContent = message;

@@ -16,8 +16,8 @@ const TicketSchema = new mongoose.Schema({
        },
        capacity : {
          type: Number,
-         default: false ,
-       }
+         required: true,
+       } 
                  
 }
 )

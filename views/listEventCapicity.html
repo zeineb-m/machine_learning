@@ -15,9 +15,24 @@
         list.appendChild(li);
       })
       })
+
+      socket.emit('getList') ;
+
+      socket.on('ticketsList', (ticketsList) => {
+        const listElement = document.getElementById('ticketsList');
+        ticketsList.forEach((item) => {
+          const li = document.createElement('li');
+          li.textContent = `Tickets: ${item._id} , Capacity: ${item.capacity}`;
+          listElement.appendChild(li);
+        });
+      });
+  
+
   </script>
 </head>
 <body>
     <h1>List of Ticket who Have 0 capacity</h1>
     <ul id="list"></ul>
+    <h1>All Tickets</h1>
+    <ul id="ticketsList"></ul>
   </body>
