@@ -23,7 +23,16 @@ app.use(express.json());
 
 app.use("/api/auth", Auth);
 app.use("/api/users", User);
-
+app.post('/api/auth/verify-otp', (req, res) => {
+    const { otp, secret } = req.body;
+    const isValid = speakeasy.authenticator.check(otp, secret);
+  
+    if (isValid) {
+      res.json({ message: 'OTP validé avec succès.' });
+    } else {
+      res.status(400).json({ message: 'Code OTP invalide.' });
+    }
+  });
 
 
 server.listen(PORT, () => {
