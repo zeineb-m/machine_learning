@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './LoginSignup.css'; // Import the same CSS for styling
-
+import './LoginSignup.css'; 
 const ResetPassword = () => {
   const location = useLocation();
   const navigate = useNavigate();
