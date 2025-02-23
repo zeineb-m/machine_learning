@@ -26,11 +26,25 @@ import {
   setOpenSidenav,
 } from "@/context";
 
+import React , { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
+
 export function DashboardNavbar() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { fixedNavbar, openSidenav } = controller;
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
+  
+
+  const {Logout} = useContext(AuthContext)
+
+  const handleLogout = async () => {
+    try {
+      await Logout()
+    }catch(error) {
+      console.error("Error logging out:", error)
+    }
+  }
 
   return (
     <Navbar
@@ -83,14 +97,14 @@ export function DashboardNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </IconButton>
-          <Link to="/auth/sign-in">
+
             <Button
               variant="text"
               color="blue-gray"
               className="hidden items-center gap-1 px-4 xl:flex normal-case"
             >
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
-              Sign In
+              Logout
             </Button>
             <IconButton
               variant="text"
@@ -99,7 +113,8 @@ export function DashboardNavbar() {
             >
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
             </IconButton>
-          </Link>
+
+          <Link onClick={handleLogout} className="text-blue bg-blue">Logout</Link>
           <Menu>
             <MenuHandler>
               <IconButton variant="text" color="blue-gray">

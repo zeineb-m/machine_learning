@@ -1,8 +1,7 @@
-import {useState, useEffect, useContext} from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Card,
   CardBody,
-  CardHeader,
   CardFooter,
   Avatar,
   Typography,
@@ -10,7 +9,6 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { Link } from "react-router-dom";
 import { ProfileInfoCard } from "@/widgets/cards";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { getUser } from "@/api/users";
@@ -18,6 +16,7 @@ import { getUser } from "@/api/users";
 export function Profile() {
   const { getCurrentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
+  const [imageSrc, setImageSrc] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,6 +34,20 @@ export function Profile() {
     fetchUserData();
   }, [getCurrentUser]);
 
+  useEffect(() => {
+    if (userData?.image?.data) {
+      // Convert image data from Buffer to Base64 string
+      const buffer = new Uint8Array(userData.image.data.data); // Access the data array
+      const base64String = `data:${userData.image.contentType};base64,${btoa(
+        String.fromCharCode(...buffer)
+      )}`;
+      setImageSrc(base64String);
+
+      // Log the imageSrc to the console
+      console.log(base64String); // Log the Base64 string for testing
+    }
+  }, [userData]); // Update when userData changes
+
   if (!userData) {
     return <Typography>Loading user data...</Typography>;
   }
@@ -49,8 +62,8 @@ export function Profile() {
           <div className="mb-10 flex items-center justify-between flex-wrap gap-6">
             <div className="flex items-center gap-6">
               <Avatar
-                src={userData.image }
-                alt="bruce-mars"
+                src={imageSrc} 
+                alt="User Avatar"
                 size="xl"
                 variant="rounded"
                 className="rounded-lg shadow-lg shadow-blue-gray-500/40"
@@ -95,9 +108,7 @@ export function Profile() {
             
             <div className="mt-6 grid grid-cols-1 gap-12 md:grid-cols-2 xl:grid-cols-4">
               <Card color="transparent" shadow={false}>
-                
                 <CardBody className="py-0 px-1">
-                  
                   <Typography
                     variant="h5"
                     color="blue-gray"
@@ -130,7 +141,6 @@ export function Profile() {
                   </Button>
                 </CardFooter>
               </Card>
-              
             </div>
           </div>
         </CardBody>

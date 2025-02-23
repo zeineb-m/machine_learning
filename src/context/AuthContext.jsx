@@ -1,4 +1,5 @@
 import { createContext, useEffect, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 
 const INITIAL_STATE = {
   user: JSON.parse(localStorage.getItem("user")) || null,
@@ -31,13 +32,13 @@ const AuthReducer = (state, action) => {
 
 export const AuthContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
+  // const navigate = useNavigate();
 
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(state.user));
     localStorage.setItem("token", state.token);
   }, [state.user, state.token]);
 
-  // Function to get the current user details
   const getCurrentUser = () => {
     if (state.user) {
       return {
@@ -53,6 +54,13 @@ export const AuthContextProvider = ({ children }) => {
     return null;
   };
 
+  const Logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    dispatch({ type: "LOGOUT" });
+    window.location.href = "/";
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -62,6 +70,7 @@ export const AuthContextProvider = ({ children }) => {
         error: state.error,
         dispatch,
         getCurrentUser,
+        Logout
       }}
     >
       {children}
