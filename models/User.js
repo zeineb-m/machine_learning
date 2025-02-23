@@ -63,10 +63,15 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false, 
   },
+  
   image: {
     data: Buffer,          
     contentType: String,   
   },
+
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
+
 });
 
 export const User = mongoose.model("User", userSchema);

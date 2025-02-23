@@ -6,7 +6,14 @@ import { connectDatabase } from './database/dbConnect.js';
 import http from "http";
 import cors from "cors";
 
+import path from "path";
+import { fileURLToPath } from "url";
 
+// Convertir l'URL du module en chemin de fichier
+const __filename = fileURLToPath(import.meta.url);
+
+// Obtenir le répertoire parent
+const __dirname = path.dirname(__filename);
 connectDatabase();
 
 const app = express();
@@ -20,19 +27,11 @@ configDotenv();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 app.use("/api/auth", Auth);
 app.use("/api/users", User);
-app.post('/api/auth/verify-otp', (req, res) => {
-    const { otp, secret } = req.body;
-    const isValid = speakeasy.authenticator.check(otp, secret);
-  
-    if (isValid) {
-      res.json({ message: 'OTP validé avec succès.' });
-    } else {
-      res.status(400).json({ message: 'Code OTP invalide.' });
-    }
-  });
 
 
 server.listen(PORT, () => {
