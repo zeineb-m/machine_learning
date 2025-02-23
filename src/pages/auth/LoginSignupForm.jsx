@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState, useContext } from "react";
 import { auth } from "../../api/auth";
 import { AuthContext } from "../../context/AuthContext.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./LoginSignup.css";
 import Swal from "sweetalert2";
 
@@ -290,6 +290,10 @@ const LoginSignupForm = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    alert("Please check your email for the password reset link");
+  };
+
   return (
     <div className="login-signup">
       <div className={`container ${isSignUp ? "active" : ""}`}>
@@ -565,6 +569,21 @@ const LoginSignupForm = () => {
                 <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                 <i className="bx bxs-lock-alt"></i>
               </div>
+              <div className="forgot-password">
+                <Link 
+                  to="/auth/forgot-password"
+                  style={{ 
+                    cursor: 'pointer',
+                    color: '#7494ec',
+                    fontSize: '0.9rem',
+                    textDecoration: 'underline',
+                    marginBottom: '15px',
+                    display: 'inline-block'
+                  }}
+                >
+                  Do you forget your password?
+                </Link>
+              </div>
               <button type="submit" className="btn" disabled={loading} style={{ backgroundColor: "#7494ec", width: "50%" }}>
                 {loading ? "Logging in..." : "Login"}
               </button>
@@ -580,7 +599,7 @@ const LoginSignupForm = () => {
             <button className="btn register-btn" onClick={() => setIsSignUp(true)}>Register</button>
           </div>
           <div className="toggle-panel toggle-right">
-            <h1>Welcome Back!</h1>
+            <h1>hey Back!</h1>
             <p>Already have an account?</p>
             <button className="btn login-btn" onClick={() => setIsSignUp(false)}>Login</button>
           </div>
