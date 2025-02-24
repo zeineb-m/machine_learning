@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["accountant", "Project Manager","financial manager","external auditeur","manager controller","Employees"],
+    enum: ["accountant", "Project Manager","financial manager"," auditeur","manager controller","Employees"],
 
   },
   project: {
