@@ -1,4 +1,4 @@
-import { registerUser , login, checkMail , forgotPassword , resetPassword } from '../controllers/Auth.js';
+import { registerUser , login, checkMail , forgotPassword , resetPassword, faceLogin } from '../controllers/Auth.js';
 import { Router } from 'express';
 import { sendEmail, verifyCode } from '../services/emailService.js';
 
@@ -22,4 +22,5 @@ router.route("/check").post(checkMail) ;
 
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
+router.post("/face-login", faceLogin);
 export default router;
