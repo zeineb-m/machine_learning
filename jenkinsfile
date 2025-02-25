@@ -14,11 +14,24 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'scanner'  // The name you gave in Jenkins config
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
         stage('Build application') {
             steps {
                 sh 'npm run build-dev'
             }
         }
+
+       
     }
 
     post {
