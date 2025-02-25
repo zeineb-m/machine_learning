@@ -141,8 +141,8 @@ export function Profile() {
                         Start Date:{" "}
                         {userData?.project?.startDate
                           ? new Date(userData?.project.startDate)
-                              .toISOString()
-                              .slice(0, 10)
+                            .toISOString()
+                            .slice(0, 10)
                           : "N/A"}
                       </Typography>
                     </CardBody>
