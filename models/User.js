@@ -47,12 +47,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "Project Manager",
+    enum: ["accountant", "Project Manager","financial manager"," auditeur","manager controller","Employees"],
+
   },
   project: {
-    name: { type: String, required: true },
+    name: { type: String },
     description: { type: String },
-    startDate: { type: Date, required: true },
+    startDate: { type: Date },
     status: {
       type: String,
       enum: ["planned", "ongoing", "completed"],

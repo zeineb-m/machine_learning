@@ -97,6 +97,7 @@ export const registerUser = async (req, res) => {
     phone,
     email,
     image, 
+    role: req.body.role || "Project Manager", 
     password: hashedPassword,
     project: {
       name: projectName,
@@ -141,7 +142,39 @@ if(token)
 }catch(error) {
     res.status(500).json({message: error.message})
 }};
+export const faceLogin = async (req, res) => {
+  try {
+    const { image } = req.body;
 
+    if (!image) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+
+    // Envoi de l'image à l'API Python pour la reconnaissance faciale
+    const response = await axios.post("http://localhost:5010/get_person_data", { image });
+
+    if (response.data.success && response.data.userId) {
+      const findUser = await User.findById(response.data.userId);
+
+      if (!findUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Génération du token JWT
+      const token = jwt.sign(
+        { id: findUser._id, role: findUser.role, isAvailable: findUser.isDisabled },
+        process.env.JWT_SECRET,
+        { expiresIn: "5d" }
+      );
+
+      return res.status(200).json({ token, user: findUser });
+    } else {
+      return res.status(401).json({ message: "Face recognition failed" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 export const checkMail= async (req, res) => {
   const { email } = req.body;
 
@@ -323,3 +356,5 @@ export const resetPassword = async (req, res) => {
       res.status(500).json({ message: "Error resetting password" });
   }
 };
+
+
