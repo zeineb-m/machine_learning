@@ -5,7 +5,7 @@ import { AuthContext } from "@/context/AuthContext";
 const ProtectedRoute = () => {
   const { user } = useContext(AuthContext);
 
-  return user ? <Outlet /> : <Navigate to="/auth/sign-in" replace />;
+  return user ? <Outlet /> : <Navigate to="/index" replace />;
 };
 
 export default ProtectedRoute;

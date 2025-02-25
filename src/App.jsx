@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Dashboard, Auth, ForgotPassword, ResetPassword } from "@/layouts";
 import ProtectedRoute from "@/protectedRoute/ProtectedRoute";
+import Home from "./pages/home/Home";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
         <Route path="*" element={<Dashboard />} />
       </Route>
       <Route path="/auth/*" element={<Auth />} />
+      <Route path="/index" element={<Home />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<Navigate to="/dashboard/home" replace />} />

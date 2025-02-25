@@ -12,11 +12,19 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import { ProfileInfoCard } from "@/widgets/cards";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { getUser } from "@/api/users";
+import { EditProfile } from "./EditProfile.jsx";
 
 export function Profile() {
   const { getCurrentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [imageSrc, setImageSrc] = useState("");
+  const [updateUser , setUpdateUser] = useState(false);
+
+  console.log(updateUser)
+
+  const fetchUpdate=()=> {
+    updateUser ? setUpdateUser(false) : setUpdateUser(true)
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,17 +44,14 @@ export function Profile() {
 
   useEffect(() => {
     if (userData?.image?.data) {
-      // Convert image data from Buffer to Base64 string
-      const buffer = new Uint8Array(userData.image.data.data); // Access the data array
+      const buffer = new Uint8Array(userData.image.data.data);
       const base64String = `data:${userData.image.contentType};base64,${btoa(
         String.fromCharCode(...buffer)
       )}`;
       setImageSrc(base64String);
-
-      // Log the imageSrc to the console
-      console.log(base64String); // Log the Base64 string for testing
+      console.log(base64String);
     }
-  }, [userData]); // Update when userData changes
+  }, [userData]);
 
   if (!userData) {
     return <Typography>Loading user data...</Typography>;
@@ -54,7 +59,16 @@ export function Profile() {
 
   return (
     <>
-      <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-[url('/img/background-image.png')] bg-cover bg-center">
+    <p onClick={fetchUpdate}>update</p>
+    {
+      updateUser && (
+        <EditProfile />
+      )
+    }
+    {
+      !updateUser && (
+        <>
+<div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-[url('/img/background-image.png')] bg-cover bg-center">
         <div className="absolute inset-0 h-full w-full bg-gray-900/75" />
       </div>
       <Card className="mx-3 -mt-16 mb-6 lg:mx-4 border border-blue-gray-100">
@@ -62,7 +76,7 @@ export function Profile() {
           <div className="mb-10 flex items-center justify-between flex-wrap gap-6">
             <div className="flex items-center gap-6">
               <Avatar
-                src={imageSrc} 
+                src={imageSrc}
                 alt="User Avatar"
                 size="xl"
                 variant="rounded"
@@ -94,10 +108,13 @@ export function Profile() {
                 Email: userData.email,
               }}
               action={
-                <Tooltip content="Edit Profile">
-                  <PencilIcon className="h-4 w-4 cursor-pointer text-blue-gray-500" />
+                <Tooltip content="Edit Profile" >
+              
+                    <PencilIcon className="h-4 w-4 cursor-pointer text-blue-gray-500" onClick={fetchUpdate}/>
+                  
                 </Tooltip>
               }
+              
             />
           </div>
 
@@ -105,7 +122,6 @@ export function Profile() {
             <Typography variant="h6" color="blue-gray" className="mb-2">
               Projects
             </Typography>
-            
             <div className="mt-6 grid grid-cols-1 gap-12 md:grid-cols-2 xl:grid-cols-4">
               <Card color="transparent" shadow={false}>
                 <CardBody className="py-0 px-1">
@@ -145,6 +161,10 @@ export function Profile() {
           </div>
         </CardBody>
       </Card>
+      </>
+      )
+    }
+      
     </>
   );
 }
