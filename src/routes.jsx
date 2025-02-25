@@ -1,14 +1,19 @@
+import { Suspense, lazy } from "react";
 import {
   HomeIcon,
   UserCircleIcon,
   TableCellsIcon,
   InformationCircleIcon,
   ServerStackIcon,
-  RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
-// import { SignIn, SignUp } from "@/pages/auth";
-import LoginSignupForm from "./pages/auth/LoginSignupForm";
+
+import IsLoading from "./configs/isLoading";
+
+const Home = lazy(() => import("@/pages/dashboard/Home"));
+const Profile = lazy(() => import("@/pages/dashboard/Profile"));
+const Tables = lazy(() => import("@/pages/dashboard/Tables"));
+const Notifications = lazy(() => import("@/pages/dashboard/Notifications"));
+const LoginSignupForm = lazy(() => import("./pages/auth/LoginSignupForm"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -22,25 +27,41 @@ export const routes = [
         icon: <HomeIcon {...icon} />,
         name: "dashboard",
         path: "/home",
-        element: <Home />,
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <Home />
+          </Suspense>
+        ),
       },
       {
         icon: <UserCircleIcon {...icon} />,
         name: "profile",
         path: "/profile",
-        element: <Profile />,
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <Profile />
+          </Suspense>
+        ),
       },
       {
         icon: <TableCellsIcon {...icon} />,
         name: "tables",
         path: "/tables",
-        element: <Tables />,
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <Tables />
+          </Suspense>
+        ),
       },
       {
         icon: <InformationCircleIcon {...icon} />,
         name: "notifications",
         path: "/notifications",
-        element: <Notifications />,
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <Notifications />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -52,7 +73,11 @@ export const routes = [
         icon: <ServerStackIcon {...icon} />,
         name: "sign in",
         path: "/sign-in",
-        element: <LoginSignupForm />,
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <LoginSignupForm />
+          </Suspense>
+        ),
       },
     ],
   },

@@ -10,6 +10,7 @@ import AddUser from "./adduser";
 
 export function Tables() {
   const [addUser, setaddUser] = useState(false);
+  
   const fetchAdd = () => {
     setaddUser(!addUser); 
   };
