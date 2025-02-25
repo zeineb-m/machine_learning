@@ -36,7 +36,8 @@ export function DashboardNavbar() {
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
   
 
-  const {Logout} = useContext(AuthContext)
+  const {Logout , getCurrentUser} = useContext(AuthContext)
+   const currentUser = getCurrentUser()
 
   const handleLogout = async () => {
     try {
@@ -98,10 +99,14 @@ export function DashboardNavbar() {
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </IconButton>
 
+          <div className="flex items-center gap-4">
+            <p className="text-black">{currentUser.firstName}</p>
+            </div>
             <Button
               variant="text"
               color="blue-gray"
               className="hidden items-center gap-1 px-4 xl:flex normal-case"
+              onClick={handleLogout}
             >
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
               Logout
@@ -111,10 +116,9 @@ export function DashboardNavbar() {
               color="blue-gray"
               className="grid xl:hidden"
             >
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+              <UserCircleIcon className="h-5 w-5 text-blue-gray-900" />
             </IconButton>
 
-          <Link onClick={handleLogout} className="text-blue bg-blue">Logout</Link>
           <Menu>
             <MenuHandler>
               <IconButton variant="text" color="blue-gray">

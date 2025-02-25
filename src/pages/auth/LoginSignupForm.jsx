@@ -632,7 +632,21 @@ const LoginSignupForm = () => {
   >
     Login with Face
   </button>
-
+  <div className="/index">
+                <Link 
+                  to="/index"
+                  style={{ 
+                    cursor: 'pointer',
+                    color: '#0D4715',
+                    fontSize: '0.9rem',
+                    textDecoration: 'underline',
+                    marginBottom: '15px',
+                    display: 'inline-block'
+                  }}
+                >
+                  back to Home Page
+                </Link>
+              </div>
             </form>
           </div>
         )}

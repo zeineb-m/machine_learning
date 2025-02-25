@@ -39,20 +39,32 @@ export const AuthContextProvider = ({ children }) => {
     localStorage.setItem("token", state.token);
   }, [state.user, state.token]);
 
-  const getCurrentUser = () => {
-    if (state.user) {
-      return {
-        id: state.user._id,
-        name: `${state.user.firstName} ${state.user.lastName}`,
-        email: state.user.email,
-        role: state.user.role,
-        phone: state.user.phone,
-        gender: state.user.gender,
-        project: state.user.project || null,
-      };
-    }
-    return null;
-  };
+const getCurrentUser = () => {
+  if (state.user) {
+    return {
+      id: state.user._id,
+      name: `${state.user.firstName} ${state.user.lastName}`,
+      email: state.user.email,
+      role: state.user.role,
+      phone: state.user.phone,
+      gender: state.user.gender,
+      birthDate: state.user.birthDate,
+      CIN: state.user.CIN,
+      isDisabled: state.user.isDisabled,
+      image: state.user.image ,
+      project: state.user.project
+        ? {
+            name: state.user.project.name,
+            description: state.user.project.description,
+            startDate: state.user.project.startDate,
+            status: state.user.project.status,
+          }
+        : null,
+    };
+  }
+  return null;
+};
+
 
   const Logout = () => {
     localStorage.removeItem("user");
