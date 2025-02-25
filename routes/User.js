@@ -1,5 +1,5 @@
 
-import { getAllUsers , getUserById , deleteUserById, addUser} from '../controllers/User.js';
+import { getAllUsers , getUserById , deleteUserById, addUser , toggleUserStatus} from '../controllers/User.js';
 import { verify , verifyAdmin } from '../middleware/verifToken.js';
 import { Router } from 'express';
 
@@ -9,9 +9,10 @@ const upload = multer({ dest: 'uploads/' });
 
 router.route('/').get( getAllUsers);
 
-// router.route('/add').post(addUser);
+
 router.route('/:id').get(getUserById);
 router.route('/:id').delete(deleteUserById);
 router.post("/add", upload.single("image"), addUser);
+router.route('/:id/toggle-status').put(toggleUserStatus);
 export default router;
 

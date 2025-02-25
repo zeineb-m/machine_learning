@@ -147,3 +147,21 @@ export const addUser = async (req, res) => {
     res.status(500).json({ message: "Échec de l'enregistrement. Veuillez réessayer." });
   }
 };
+
+export const toggleUserStatus = async (req, res) => {
+  const userId = req.params.id;
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+      user.isDisabled = !user.isDisabled;
+      await user.save();    
+      res.status(200).json({
+          message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`,
+          user
+      });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+};
