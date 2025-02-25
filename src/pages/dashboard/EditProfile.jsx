@@ -2,15 +2,13 @@ import { useState, useEffect, useContext } from "react";
 import { Card, CardBody, Typography, Button, Input } from "@material-tailwind/react";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { getUser, updateUser, changePassword } from "@/api/users";
-import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export function EditProfile() {
   const { getCurrentUser } = useContext(AuthContext);
   const currentUser = getCurrentUser();
-  const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState("profile"); // 'profile' or 'password'
-
+  const [activeTab, setActiveTab] = useState("profile");
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -38,28 +36,30 @@ export function EditProfile() {
           email: data.email || "",
         });
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Erreur lors du chargement des données :", error);
       }
     };
 
     if (currentUser?.id) {
       fetchUserData();
     }
-  }, [currentUser]);
+  }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    console.log(`Updating ${name} to ${value}`); 
+    setUserData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await updateUser(currentUser.id, userData);
-      alert("Profile updated successfully!");
-      navigate("/profile");
+      Swal.fire("Success", "Profile updated successfully!", "success");
     } catch (error) {
       console.error("Error updating profile:", error);
+      Swal.fire("Error", "Failed to update profile.", "error");
     }
   };
 
@@ -71,7 +71,7 @@ export function EditProfile() {
     }
     try {
       await changePassword(currentUser.id, currentPassword, newPassword);
-      alert("Password changed successfully!");
+      Swal.fire("Success", "Password changed successfully!", "success");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -79,13 +79,13 @@ export function EditProfile() {
     } catch (error) {
       console.error("Error changing password:", error);
       setError(error.response?.data?.message || "Unknown error.");
+      Swal.fire("Error", error.response?.data?.message || "Failed to change password.", "error");
     }
   };
 
   return (
     <Card className="mx-auto mt-8 mb-6 w-full max-w-2xl border border-green-gray-200 shadow-lg">
       <CardBody className="p-6">
-        {/* Tab Navigation */}
         <div className="flex justify-between mb-6">
           <Button 
             onClick={() => setActiveTab("profile")}

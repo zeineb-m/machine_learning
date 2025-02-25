@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
+import { ForgotPassword } from "./layouts";
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/Profile"));
@@ -76,6 +77,16 @@ export const routes = [
         element: (
           <Suspense fallback={<IsLoading />}>
             <LoginSignupForm />
+          </Suspense>
+        ),
+      },
+      {
+        icon: <ServerStackIcon {...icon} />,
+        name: "forget password",
+        path: "/forget-password",
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <ForgotPassword />
           </Suspense>
         ),
       },

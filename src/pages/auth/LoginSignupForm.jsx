@@ -5,6 +5,7 @@ import { AuthContext } from "../../context/AuthContext.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import "./LoginSignup.css";
 import Swal from "sweetalert2";
+import IsLoading from "@/configs/isLoading";
 
 const LoginSignupForm = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -474,7 +475,7 @@ const LoginSignupForm = () => {
       <i className="bx bxs-image-add"></i>
     </div>
 
-    <button type="button" className="btn" style={{ backgroundColor: "#7494ec", width: "50%" }}onClick={handleNext}>
+    <button type="button" className="btn" style={{ backgroundColor: "#0D4715", width: "50%" }}onClick={handleNext}>
       Next
     </button>
   </>
@@ -604,22 +605,22 @@ const LoginSignupForm = () => {
               </div>
               <div className="forgot-password">
                 <Link 
-                  to="/auth/forgot-password"
+                  to="/auth/forget-password"
                   style={{ 
                     cursor: 'pointer',
-                    color: '#7494ec',
+                    color: '#0D4715',
                     fontSize: '0.9rem',
                     textDecoration: 'underline',
                     marginBottom: '15px',
                     display: 'inline-block'
                   }}
                 >
-                  Do you forget your password?
+                  Forget password !
                 </Link>
               </div>
               
-              <button type="submit" className="btn" disabled={loading} style={{ backgroundColor: "#7494ec", width: "50%" }}>
-                {loading ? "Logging in..." : "Login"}
+              <button type="submit" className="btn" disabled={loading} style={{ backgroundColor: "#0D4715", width: "50%" }}>
+                {loading ? <IsLoading /> : "Login"}
               </button>
               
               {error && <p className="error">{error}</p>}
@@ -627,7 +628,7 @@ const LoginSignupForm = () => {
     type="button" 
     className="btn" 
     onClick={handleFaceLogin}
-    style={{ backgroundColor: "#7494ec", width: "50%" }}
+    style={{ backgroundColor: "#0D4715", width: "50%" }}
   >
     Login with Face
   </button>
