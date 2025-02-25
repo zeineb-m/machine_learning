@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        registryCredentials = "nexus"
+        registry = "192.168.127.132:8083"
+    }
+
     stages {
         stage('Install dependencies') {
             steps {
@@ -31,11 +36,22 @@ pipeline {
             }
         }
 
-        // Ajout du stage pour la construction des images Docker
+        // Construction des images Docker
         stage('Building images (node and mongo)') {
             steps {
                 script {
                     sh 'docker-compose build'
+                }
+            }
+        }
+
+        // Déploiement des images sur Nexus
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh "docker push ${registry}/nodemongoapp:5.0"
+                    }
                 }
             }
         }
