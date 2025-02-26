@@ -120,3 +120,41 @@ export const verifyCode = (req, res) => {
     res.status(500).json({ message: "Erreur interne du serveur." });
   }
 };
+
+export const sendEmailClient = async (to, firstName, email, password) => {
+  try {
+    // Création du transporteur pour Gmail
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER, // Utiliser l'email de votre compte Gmail
+        pass: process.env.EMAIL_PASS, // Utiliser le mot de passe de votre compte Gmail
+      },
+    });
+
+    const subject = "Votre compte a été créé avec succès";
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #4CAF50;">Bienvenue, ${firstName} ! 🎉</h2>
+        <p>Votre compte a été créé avec succès. Voici vos informations de connexion :</p>
+        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Mot de passe :</strong> ${password}</p>
+        <p>Nous vous recommandons de modifier votre mot de passe après votre première connexion.</p>
+        <p>Cordialement,<br>L'équipe Support</p>
+      </div>
+    `;
+
+    // Envoi de l'email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,  // L'email de l'expéditeur
+      to,                            // L'email du destinataire
+      subject,                       // Le sujet de l'email
+      html: htmlContent,             // Le contenu HTML de l'email
+    });
+
+    console.log(`Email envoyé à ${to}`);
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email :", error);
+    throw new Error("Échec de l'envoi de l'email");
+  }
+};

@@ -4,6 +4,8 @@ import zxcvbn from 'zxcvbn';
 import path from 'path'
 import fs from 'fs';
 import multer from 'multer';
+import { sendEmailClient } from "../services/emailService.js";
+
 export const getAllUsers = async (req, res) => {
 try {
     const users = await User.find()
@@ -37,18 +39,28 @@ export const deleteUserById = async (req, res) => {
 }
 
 export const updateUserById = async (req, res) => {
-    const idUser = req.params.id;
-    const newContent = req.body ;
-    try {
+  const idUser = req.params.id;
+  const { firstName, lastName, gender, birthDate, phone, email } = req.body;
 
-        const user = await User.findByIdAndUpdate(idUser , newContent , {new : true});
-        if (!user) return res.status(404).json({ message: "User not found" });
-        res.status(200).json({user , message: "User updated" });
+  try {
+      const user = await User.findById(idUser);
+      if (!user) return res.status(404).json({ message: "User not found" });
 
-    }catch(error) {
-        res.status(500).json({ error: error })
-    }
-}
+      // Mise à jour uniquement des champs fournis
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      if (gender) user.gender = gender;
+      if (birthDate) user.birthDate = birthDate;
+      if (phone) user.phone = phone;
+      if (email) user.email = email;
+
+      await user.save();
+      res.status(200).json({ user, message: "User updated successfully" });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+};
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.resolve('uploads');
@@ -62,56 +74,34 @@ const storage = multer.diskStorage({
   },
 });
 export const addUser = async (req, res) => {
-  const {
-    CIN,
-    firstName,
-    lastName,
-    gender,
-    birthDate,
-    phone,
-    email,
-    password,
-    confirmPassword,
-    role, // Le rôle est passé ici
-  } = req.body;
+  const { CIN, firstName, lastName, gender, birthDate, phone, email, password, confirmPassword, role } = req.body;
 
-  // Liste des rôles autorisés
   const validRoles = ['accountant', 'financial manager', 'auditeur', 'manager controller'];
 
-  // Vérification que le rôle fourni est valide
   if (!validRoles.includes(role)) {
     return res.status(400).json({ message: "Rôle invalide. Veuillez choisir un rôle parmi : accountant, financial manager, auditeur, manager controller." });
   }
 
-  // Vérifier que tous les champs obligatoires sont présents
-  if (
-    !CIN || !firstName || !lastName || !gender || !birthDate || !phone ||
-    !email || !password || !confirmPassword
-  ) {
+  if (!CIN || !firstName || !lastName || !gender || !birthDate || !phone || !email || !password || !confirmPassword) {
     return res.status(400).json({ message: "Veuillez remplir tous les champs obligatoires." });
   }
 
-  // Vérification de la correspondance des mots de passe
   if (password !== confirmPassword) {
     return res.status(400).json({ message: "Les mots de passe ne correspondent pas." });
   }
 
-  // Vérification de la complexité du mot de passe
   const passwordStrength = zxcvbn(password);
   if (passwordStrength.score < 3) {
     return res.status(400).json({ message: "Le mot de passe est trop faible. Veuillez choisir un mot de passe plus complexe." });
   }
 
-  // Vérification si l'utilisateur existe déjà
   const userExist = await User.findOne({ email });
   if (userExist) {
     return res.status(400).json({ message: "Un utilisateur avec cet email existe déjà." });
   }
 
-  // Hachage du mot de passe
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Optionnel : Traitement de l'image si un fichier est envoyé
   let image = null;
   if (req.file) {
     const uploadDir = path.resolve('uploads');
@@ -125,7 +115,6 @@ export const addUser = async (req, res) => {
     };
   }
 
-  // Création du nouvel administrateur avec le rôle spécifié
   const newUser = new User({
     CIN,
     firstName,
@@ -136,11 +125,27 @@ export const addUser = async (req, res) => {
     email,
     image,
     password: hashedPassword,
-    role: role, // Rôle dynamique en fonction de la requête
+    role,
   });
 
   try {
     await newUser.save();
+
+    // Création du contenu HTML personnalisé
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #4CAF50;">Bienvenue, ${firstName} ! 🎉</h2>
+        <p>Votre compte a été créé avec succès. Voici vos informations de connexion :</p>
+        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Mot de passe :</strong> ${password}</p>
+        <p>Nous vous recommandons de modifier votre mot de passe après votre première connexion.</p>
+        <p>Cordialement,<br>L'équipe Support</p>
+      </div>
+    `;
+    // Envoi de l'email avec le contenu HTML
+    const subject = "Votre compte a été créé avec succès";
+    await sendEmailClient(email, subject, null, htmlContent, [], firstName, email, password);
+
     res.status(201).json({ message: "Utilisateur enregistré avec succès.", image: image });
   } catch (err) {
     console.error("Erreur lors de l'enregistrement de l'utilisateur :", err);
@@ -161,6 +166,28 @@ export const toggleUserStatus = async (req, res) => {
           message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`,
           user
       });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const changePassword = async (req, res) => {
+  const userId = req.params.userId;
+  const {currentPassword, newPassword } = req.body;
+  try {
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) return res.status(400).json({ message: "Incorrect current password" });
+
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+      await user.save();
+
+      res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
       res.status(500).json({ error: error.message });
   }

@@ -119,6 +119,8 @@ export const registerUser = async (req, res) => {
   }
 };
 
+
+
 export const login = async (req , res) => {
 try {
 const {email , password} = req.body ;
@@ -132,6 +134,9 @@ const isMatch = await bcrypt.compare(password, findUser.password);
 if (!isMatch)
     return res.status(400).json({message:"your password is incorrect"})
 
+if(findUser.isDisabled)
+    return res.status(400).json({message:"your account is disabled"})
+
 const token = jwt.sign({id: findUser._id , role : findUser.role , isAvailable: findUser.isDisabled} ,
      process.env.JWT_SECRET , 
      {expiresIn: '5d'});
@@ -142,6 +147,8 @@ if(token)
 }catch(error) {
     res.status(500).json({message: error.message})
 }};
+
+
 export const faceLogin = async (req, res) => {
   try {
     const { image } = req.body;
