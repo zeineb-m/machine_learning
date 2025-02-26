@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        registryCredentials = "nexus"
+        registry = "192.168.127.132:8083"
+    }
+
     stages {
         stage('Install dependencies') {
             steps {
@@ -14,9 +19,52 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'scanner'  // The name you gave in Jenkins config
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
         stage('Build application') {
             steps {
                 sh 'npm run build-dev'
+            }
+        }
+
+        // Construction des images Docker
+        stage('Building images (node and mongo)') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+
+        // Déploiement des images sur Nexus
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh "docker push ${registry}/nodemongoapp:6.0"
+                    }
+                }
+            }
+        }
+
+        // Lancer l'application après avoir récupéré l'image depuis Nexus
+        stage('Run application') {
+            steps {
+                script {
+                    docker.withRegistry("http://${registry}", registryCredentials) {
+                        sh "docker pull ${registry}/nodemongoapp:6.0"
+                        sh 'docker-compose up -d'
+                    }
+                }
             }
         }
     }
