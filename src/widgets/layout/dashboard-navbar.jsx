@@ -26,7 +26,7 @@ import {
   setOpenSidenav,
 } from "@/context";
 
-import React , { useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 
 export function DashboardNavbar() {
@@ -34,18 +34,17 @@ export function DashboardNavbar() {
   const { fixedNavbar, openSidenav } = controller;
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
-  
 
-  const {Logout , getCurrentUser} = useContext(AuthContext)
-   const currentUser = getCurrentUser()
+  const { Logout, getCurrentUser } = useContext(AuthContext);
+  const currentUser = getCurrentUser();
 
   const handleLogout = async () => {
     try {
-      await Logout()
-    }catch(error) {
-      console.error("Error logging out:", error)
+      await Logout();
+    } catch (error) {
+      console.error("Error logging out:", error);
     }
-  }
+  };
 
   return (
     <Navbar
@@ -74,11 +73,7 @@ export function DashboardNavbar() {
                 {layout}
               </Typography>
             </Link>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="font-normal"
-            >
+            <Typography variant="small" color="blue-gray" className="font-normal">
               {page}
             </Typography>
           </Breadcrumbs>
@@ -100,24 +95,40 @@ export function DashboardNavbar() {
           </IconButton>
 
           <div className="flex items-center gap-4">
-            <p className="text-black">{currentUser.firstName}</p>
-            </div>
-            <Button
-              variant="text"
-              color="blue-gray"
-              className="hidden items-center gap-1 px-4 xl:flex normal-case"
-              onClick={handleLogout}
-            >
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
-              Logout
-            </Button>
-            <IconButton
-              variant="text"
-              color="blue-gray"
-              className="grid xl:hidden"
-            >
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-900" />
-            </IconButton>
+            {currentUser && (
+              <>
+                <Typography variant="small" color="blue-gray">
+                  {currentUser.name}
+                </Typography>
+                <Avatar
+  src={
+    currentUser.image?.data
+      ? `data:${currentUser.image.contentType};base64,${btoa(
+          String.fromCharCode(...new Uint8Array(currentUser.image.data.data))
+        )}`
+      : "https://via.placeholder.com/150"
+  }
+  alt="User Avatar"
+  size="sm"
+  variant="circular"
+/>
+
+
+              </>
+            )}
+          </div>
+
+          <Button
+            variant="text"
+            color="blue-gray"
+            className="hidden items-center gap-1 px-4 xl:flex normal-case"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+          <IconButton variant="text" color="blue-gray" className="grid xl:hidden">
+            <UserCircleIcon className="h-5 w-5 text-blue-gray-900" />
+          </IconButton>
 
           <Menu>
             <MenuHandler>
