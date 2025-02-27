@@ -217,7 +217,7 @@ export const forgotPassword = async (req, res) => {
       );
 
       const urlSafeToken = encodeURIComponent(resetToken);
-      const resetLink = `http://localhost:5173/auth/reset-password?token=${urlSafeToken}`;
+      const resetLink = `http://localhost:5173/auth/forget-password?token=${urlSafeToken}`;
       const logoPath = path.join(process.cwd(), 'public', 'logo.png');
 
       const emailContent = `
