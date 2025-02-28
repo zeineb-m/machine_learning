@@ -265,29 +265,40 @@ const LoginSignupForm = () => {
   };
 
  
-  // Login function
   const handleLogin = async (e) => {
     e.preventDefault();
     dispatch({ type: "LOGIN_START" });
-
+  
     try {
       if (!email || !password) {
         dispatch({ type: "LOGIN_FAILURE", payload: "Please fill all fields" });
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: "Please fill all fields",
+        });
         return;
       }
-
+  
       const res = await auth(email, password);
-      dispatch({ 
-        type: "LOGIN_SUCCESS", 
-        payload: { 
-          user: res.data.user, 
-          token: res.data.token 
-        } 
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: {
+          user: res.data.user,
+          token: res.data.token,
+        },
       });
-      
+  
       navigate("/");
     } catch (err) {
-      dispatch({ type: "LOGIN_FAILURE", payload: err.response?.data || "Login failed" });
+      const errorMessage = err.response?.data.message || "Login failed";
+      dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
+  
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: errorMessage,
+      });
     }
   };
 

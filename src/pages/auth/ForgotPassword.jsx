@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Import axios for making API requests
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import axios from 'axios'; 
+import { Link } from 'react-router-dom'; 
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState(""); // State to hold success/error messages
+  const [message, setMessage] = useState(""); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3001/api/auth/forgot-password', { email });
-      setMessage(response.data.message); // Set success message
+      setMessage(response.data.message); 
     } catch (error) {
       setMessage(error.response?.data.message || "An error occurred"); 
     }
@@ -26,7 +26,7 @@ const ForgotPassword = () => {
         />
       </div>
       <div className="flex-1 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl"> {/* Increased width */}
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl"> 
           <h1 className="text-2xl font-bold text-center mb-6">Forgot Password</h1>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">

@@ -80,16 +80,6 @@ export const routes = [
           </Suspense>
         ),
       },
-      {
-        icon: <ServerStackIcon {...icon} />,
-        name: "forget password",
-        path: "/forget-password",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <ForgotPassword />
-          </Suspense>
-        ),
-      },
     ],
   },
 ];

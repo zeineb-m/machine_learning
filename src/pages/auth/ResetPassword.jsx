@@ -31,13 +31,11 @@ const ResetPassword = () => {
       return;
     }
 
-    // Validate passwords match
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // Validate password strength
     if (newPassword.length < 8) {
       setError("Password must be at least 8 characters long");
       return;
@@ -49,7 +47,6 @@ const ResetPassword = () => {
         newPassword
       });
       setMessage(response.data.message);
-      // Redirect to login page after successful password reset
       setTimeout(() => {
         navigate('/auth/sign-in');
       }, 2000);
@@ -94,8 +91,8 @@ const ResetPassword = () => {
             />
           </div>
           {error && <p className="error" style={{ color: 'red' }}>{error}</p>}
-          {message && <p className="success" style={{ color: 'green' }}>{message}</p>}
-          <button type="submit" className="btn" style={{ backgroundColor: "#B6D7A8", width: "50%" }}>
+          {message && <p className="success" style={{ color: '#0D4715' }}>{message}</p>}
+          <button type="submit" className="btn" style={{ backgroundColor: "#0D4715", width: "50%" }}>
             Reset Password
           </button>
         </form>
