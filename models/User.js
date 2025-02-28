@@ -50,16 +50,12 @@ const userSchema = new mongoose.Schema({
     enum: ["accountant", "Project Manager","financial manager"," auditeur","manager controller","Employees"],
 
   },
-  project: {
-    name: { type: String },
-    description: { type: String },
-    startDate: { type: Date },
-    status: {
-      type: String,
-      enum: ["planned", "ongoing", "completed"],
-      default: "planned",
+  projects: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
     },
-  },
+  ],
   isDisabled: {
     type: Boolean,
     default: false, 

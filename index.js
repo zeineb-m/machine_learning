@@ -2,6 +2,7 @@ import express from 'express';
 import { configDotenv } from 'dotenv';
 import Auth from './routes/Auth.js';
 import User from './routes/User.js';
+import Project from './routes/Project.js';
 import { connectDatabase } from './database/dbConnect.js';
 import http from "http";
 import cors from "cors";
@@ -32,6 +33,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/auth", Auth);
 app.use("/api/users", User);
+app.use("/api/project", Project);
 
 
 server.listen(PORT, () => {
