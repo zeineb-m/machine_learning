@@ -11,13 +11,29 @@ import {
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { ProfileInfoCard } from "@/widgets/cards";
 import { AuthContext } from "@/context/AuthContext.jsx";
-import { getUser } from "@/api/users";
+import { getUser } from "@/api/users"; 
 import { EditProfile } from "./EditProfile.jsx";
 import IsLoading from "@/configs/isLoading.jsx";
 
 export function Profile() {
   const { getCurrentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
+  const [projects, setProjects] = useState([
+    {
+      "id": 1,
+      "name": "Project Alpha",
+      "status": "In Progress",
+      "startDate": "2023-10-01",
+      "description": "A project to develop a new feature."
+    },
+    {
+      "id": 2,
+      "name": "Project Beta",
+      "status": "Completed",
+      "startDate": "2023-09-15",
+      "description": "A project to optimize performance."
+    }
+  ]); // State for projects
   const [imageSrc, setImageSrc] = useState("");
   const [updateUser, setUpdateUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +55,8 @@ export function Profile() {
     fetchUserData();
   }, [getCurrentUser]);
 
+
+
   useEffect(() => {
     if (userData?.image?.data) {
       const buffer = new Uint8Array(userData.image.data.data);
@@ -58,24 +76,32 @@ export function Profile() {
       ) : (
         !isLoading && (
           <>
-            <div className="relative mt-8 h-72 w-full overflow-hidden rounded-xl bg-[url('/img/background-image.png')] bg-cover bg-center">
-              <div className="absolute inset-0 h-full w-full bg-gray-900/75" />
+            {/* Hero Section */}
+            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-blue-500">
+              <div className="absolute inset-0 bg-black/50" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Typography variant="h1" className="text-white text-5xl font-bold">
+                  Welcome, {userData?.firstName}!
+                </Typography>
+              </div>
             </div>
-            <Card className="mx-4 -mt-16 mb-6 border border-gray-200 shadow-lg rounded-xl p-6 bg-white">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+            {/* Profile Card */}
+            <Card className="mx-4 -mt-24 mb-6 border-0 shadow-xl rounded-2xl bg-gradient-to-r from-green-50 to-blue-50">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8">
                 <div className="flex items-center gap-6">
                   <Avatar
                     src={imageSrc}
                     alt="User Avatar"
-                    size="xl"
-                    variant="rounded"
-                    className="rounded-lg shadow-lg shadow-green-gray-500/40"
+                    size="xxl"
+                    variant="circular"
+                    className="rounded-full border-4 border-white shadow-2xl"
                   />
                   <div>
-                    <Typography variant="h4" color="green-gray">
+                    <Typography variant="h3" className="text-gray-900">
                       {userData?.firstName} {userData?.lastName}
                     </Typography>
-                    <Typography variant="small" className="text-gray-600">
+                    <Typography variant="h6" className="text-gray-600">
                       {userData?.role || "User"}
                     </Typography>
                   </div>
@@ -83,22 +109,24 @@ export function Profile() {
 
                 <Tooltip content="Edit Profile">
                   <Button
-                    variant="outlined"
-                    size="sm"
+                    variant="gradient"
+                    size="lg"
                     color="green"
                     onClick={toggleEdit}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 shadow-lg hover:shadow-green-500/40"
                   >
-                    <PencilIcon className="h-5 w-5 text-green-500" />
+                    <PencilIcon className="h-5 w-5" />
                     Edit Profile
                   </Button>
                 </Tooltip>
               </div>
             </Card>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mx-4">
-              {/* User Details */}
-              <Card className="p-6 border border-gray-200 shadow-md bg-white col-span-1">
-                <Typography variant="h5" color="green-gray" className="mb-4">
+
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-4">
+              {/* Profile Information Card */}
+              <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-blue-50">
+                <Typography variant="h4" className="text-gray-900 mb-6">
                   Profile Information
                 </Typography>
                 <ProfileInfoCard
@@ -118,40 +146,60 @@ export function Profile() {
 
               {/* Projects Section */}
               <div className="col-span-2">
-                <Typography variant="h5" color="green-gray" className="mb-4">
+                <Typography variant="h4" className="text-gray-900 mb-6">
                   Projects
                 </Typography>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  <Card className="p-4 border border-gray-200 shadow-md bg-white rounded-xl">
-                    <CardBody className="py-2">
-                      <Typography
-                        variant="h5"
-                        color="green-gray"
-                        className="font-semibold mb-2"
-                      >
-                        {userData?.project?.name || "No Project Assigned"}
-                      </Typography>
-                      <Typography className="text-gray-500">
-                        {userData?.project?.status || "Status Unavailable"}
-                      </Typography>
-                      <Typography className="text-gray-500 mt-1">
-                        {userData?.project?.description || "No Description"}
-                      </Typography>
-                      <Typography className="text-gray-500 mt-2">
-                        Start Date:{" "}
-                        {userData?.project?.startDate
-                          ? new Date(userData?.project.startDate)
-                            .toISOString()
-                            .slice(0, 10)
-                          : "N/A"}
-                      </Typography>
-                    </CardBody>
-                    <CardFooter className="flex justify-end">
-                      <Button variant="outlined" size="sm">
-                        View Project
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[600px] table-auto">
+                    <thead>
+                      <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                        <th className="px-6 py-3 text-left">Project Name</th>
+                        <th className="px-6 py-3 text-left">Status</th>
+                        <th className="px-6 py-3 text-left">Start Date</th>
+                        <th className="px-6 py-3 text-left">Description</th>
+                        <th className="px-6 py-3 text-left">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projects.map((project, index) => (
+                        <tr
+                          key={index}
+                          className={`${
+                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          } hover:bg-gray-100 transition-colors duration-200`}
+                        >
+                          <td className="px-6 py-4">{project.name}</td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`px-2 py-1 rounded-full text-sm ${
+                                project.status === "Completed"
+                                  ? "bg-green-100 text-green-800"
+                                  : project.status === "In Progress"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {project.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            {new Date(project.startDate).toISOString().slice(0, 10)}
+                          </td>
+                          <td className="px-6 py-4">{project.description}</td>
+                          <td className="px-6 py-4">
+                            <Button
+                              variant="gradient"
+                              size="sm"
+                              color="green"
+                              className="shadow-md hover:shadow-green-500/40"
+                            >
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

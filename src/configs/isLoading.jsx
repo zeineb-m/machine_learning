@@ -2,7 +2,7 @@ import React from 'react';
 
 const IsLoading = () => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+    <div className="fixed inset-0 z-[1000px] flex items-center justify-center bg-black bg-opacity-75 ">
       <div className="loader-inner relative h-[60px] w-[100px]">
         {[...Array(5)].map((_, index) => (
           <div
