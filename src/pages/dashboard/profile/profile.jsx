@@ -10,7 +10,7 @@ import {
 } from "@material-tailwind/react";
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { ProfileInfoCard } from "@/widgets/cards";
-import { AuthContext } from "../../context/AuthContext.jsx";
+import { AuthContext } from "@/context/AuthContext.jsx";
 import { getUser } from "@/api/users";
 import { EditProfile } from "./EditProfile.jsx";
 import IsLoading from "@/configs/isLoading.jsx";

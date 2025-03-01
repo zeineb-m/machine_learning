@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { Card, CardBody, Typography, Button, Input } from "@material-tailwind/react";
-import { AuthContext } from "../../context/AuthContext.jsx";
+import { AuthContext } from "@/context/AuthContext.jsx";
 import { getUser, updateUser, changePassword } from "@/api/users";
 import Swal from "sweetalert2";
 

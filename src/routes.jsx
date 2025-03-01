@@ -3,17 +3,14 @@ import {
   HomeIcon,
   UserCircleIcon,
   TableCellsIcon,
-  InformationCircleIcon,
   ServerStackIcon,
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
-import { ForgotPassword } from "./layouts";
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
-const Profile = lazy(() => import("@/pages/dashboard/Profile"));
-const Tables = lazy(() => import("@/pages/dashboard/Tables"));
-const Notifications = lazy(() => import("@/pages/dashboard/Notifications"));
+const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
+const Tables = lazy(() => import("@/pages/dashboard/users/Tables"));
 const LoginSignupForm = lazy(() => import("./pages/auth/LoginSignupForm"));
 
 const icon = {
@@ -36,7 +33,7 @@ export const routes = [
       },
       {
         icon: <UserCircleIcon {...icon} />,
-        name: "profile",
+        name: "Profile",
         path: "/profile",
         element: (
           <Suspense fallback={<IsLoading />}>
@@ -46,7 +43,7 @@ export const routes = [
       },
       {
         icon: <TableCellsIcon {...icon} />,
-        name: "tables",
+        name: "Users",
         path: "/tables",
         element: (
           <Suspense fallback={<IsLoading />}>
@@ -54,21 +51,11 @@ export const routes = [
           </Suspense>
         ),
       },
-      {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
-        path: "/notifications",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <Notifications />
-          </Suspense>
-        ),
-      },
     ],
   },
   {
-    title: "auth pages",
-    layout: "auth",
+    title: "Projects ",
+    layout: "project",
     pages: [
       {
         icon: <ServerStackIcon {...icon} />,
