@@ -96,39 +96,38 @@ export function DashboardNavbar() {
 
           <div className="flex items-center gap-4">
             {currentUser && (
-              <>
-                <Typography variant="small" color="blue-gray">
-                  {currentUser.name}
-                </Typography>
-                <Avatar
-  src={
-    currentUser.image?.data
-      ? `data:${currentUser.image.contentType};base64,${btoa(
-          String.fromCharCode(...new Uint8Array(currentUser.image.data.data))
-        )}`
-      : "https://via.placeholder.com/150"
-  }
-  alt="User Avatar"
-  size="sm"
-  variant="circular"
-/>
-
-
-              </>
+              <Menu>
+                <MenuHandler>
+                  <Avatar
+                    src={
+                      currentUser.image?.data
+                        ? `data:${currentUser.image.contentType};base64,${btoa(
+                            String.fromCharCode(...new Uint8Array(currentUser.image.data.data))
+                          )}`
+                        : "https://via.placeholder.com/150"
+                    }
+                    alt="User Avatar"
+                    size="sm"
+                    variant="circular"
+                    className="cursor-pointer"
+                  />
+                </MenuHandler>
+                <MenuList>
+                  <MenuItem>
+                    <Link to="/dashboard/profile" className="flex items-center gap-2">
+                      <UserCircleIcon className="h-5 w-5" />
+                      <Typography variant="small">See your profile</Typography>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout} className="flex items-center gap-2">
+                    <Typography variant="small" color="red">
+                      Logout
+                    </Typography>
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             )}
           </div>
-
-          <Button
-            variant="text"
-            color="blue-gray"
-            className="hidden items-center gap-1 px-4 xl:flex normal-case"
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-          <IconButton variant="text" color="blue-gray" className="grid xl:hidden">
-            <UserCircleIcon className="h-5 w-5 text-blue-gray-900" />
-          </IconButton>
 
           <Menu>
             <MenuHandler>

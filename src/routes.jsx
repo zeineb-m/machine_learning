@@ -54,7 +54,7 @@ export const routes = [
     ],
   },
   {
-    title: "Projects ",
+    title: "projects",
     layout: "project",
     pages: [
       {

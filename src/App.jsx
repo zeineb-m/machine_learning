@@ -2,13 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import ProtectedRoute from "@/protectedRoute/ProtectedRoute";
 import IsLoading from "./configs/isLoading";
+import LoginSignupForm from "./pages/auth/LoginSignupForm";
 
 // Lazy-loaded components
 const Dashboard = lazy(() => import("@/layouts/Dashboard"));
-const Auth = lazy(() => import("@/layouts/Auth"));
-const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
-const Home = lazy(() => import("./pages/home/Home"));
+const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
+const Home = lazy(() => import("@/pages/home/Home"));
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Route path="/dashboard/*" element={<ProtectedRoute />}>
           <Route path="*" element={<Dashboard />} />
         </Route>
-        <Route path="/auth/*" element={<Auth />} />
+        <Route path="/auth/*" element={<LoginSignupForm />} />
         <Route path="/index" element={<Home />} />
         <Route path="/auth/forget-password" element={<ForgotPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
