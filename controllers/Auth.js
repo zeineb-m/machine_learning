@@ -52,39 +52,35 @@ export const registerUser = async (req, res) => {
     projectStatus,
   } = req.body;
 
-  
   if (
-    !CIN ||  !firstName ||  !lastName || !gender || !birthDate || !phone ||
+    !CIN || !firstName || !lastName || !gender || !birthDate || !phone ||
     !email || !password || !confirmPassword || !projectName || !projectDescription || !projectStartDate
   ) {
-    return res.status(400).json({ message: "Veuillez remplir tous les champs obligatoires." });
+    return res.status(400).json({ message: "Please fill in all required fields." });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Les mots de passe ne correspondent pas." });
+    return res.status(400).json({ message: "Passwords do not match." });
   }
 
   const passwordStrength = zxcvbn(password);
   if (passwordStrength.score < 3) {
-    return res.status(400).json({ message: "Le mot de passe est trop faible. Veuillez choisir un mot de passe plus complexe." });
+    return res.status(400).json({ message: "Password is too weak. Please choose a more complex password." });
   }
-
 
   const userExist = await User.findOne({ email });
   if (userExist) {
-    return res.status(400).json({ message: "Un utilisateur avec cet email existe déjà." });
+    return res.status(400).json({ message: "A user with this email already exists." });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   let image = null;
   if (req.file) {
-    // Lire le fichier téléchargé en Buffer
-    const imageData = fs.readFileSync(path.resolve('uploads', req.file.filename)); // Lire l'image en Buffer
-
+    const imageData = fs.readFileSync(path.resolve('uploads', req.file.filename));
     image = {
       data: imageData,
-      contentType: req.file.mimetype, 
+      contentType: req.file.mimetype,
     };
   }
 
@@ -96,28 +92,33 @@ export const registerUser = async (req, res) => {
     birthDate,
     phone,
     email,
-    image, 
-    role: req.body.role || "Project Manager", 
+    image,
+    role: req.body.role || "Project Manager",
     password: hashedPassword,
-    project: {
-      name: projectName,
-      description: projectDescription,
-      startDate: projectStartDate,
-      status: projectStatus || "planned",
-    },
-    
   });
 
-
   try {
-    await newUser.save();
-    verificationCache.delete(email); 
-    res.status(201).json({ message: "Utilisateur enregistré avec succès.", image: image });
+    const savedUser = await newUser.save();
+
+    const newProject = new Project({
+      title: projectName,
+      description: projectDescription,
+      startDate: projectStartDate,
+      status: projectStatus || "Not Started",
+      user: savedUser._id, 
+    });
+
+    const savedProject = await newProject.save();
+    savedUser.projects.push(savedProject._id);
+    await savedUser.save();
+
+    res.status(201).json({ message: "User successfully registered.", user: savedUser, project: savedProject });
   } catch (err) {
-    console.error("Erreur lors de l'enregistrement de l'utilisateur :", err);
-    res.status(500).json({ message: "Échec de l'enregistrement. Veuillez réessayer." });
+    console.error("Error during user registration:", err);
+    res.status(500).json({ message: "Registration failed. Please try again." });
   }
 };
+
 
 
 
