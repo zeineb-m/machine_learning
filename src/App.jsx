@@ -4,7 +4,7 @@ import ProtectedRoute from "@/protectedRoute/ProtectedRoute";
 import IsLoading from "./configs/isLoading";
 import LoginSignupForm from "./pages/auth/LoginSignupForm";
 
-// Lazy-loaded components
+
 const Dashboard = lazy(() => import("@/layouts/Dashboard"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
@@ -12,7 +12,7 @@ const Home = lazy(() => import("@/pages/home/Home"));
 
 function App() {
   return (
-    <Suspense fallback={IsLoading}>
+    <Suspense fallback={<IsLoading />}>
       <Routes>
         <Route path="/dashboard/*" element={<ProtectedRoute />}>
           <Route path="*" element={<Dashboard />} />

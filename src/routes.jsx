@@ -12,6 +12,7 @@ const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
 const Tables = lazy(() => import("@/pages/dashboard/users/Tables"));
 const LoginSignupForm = lazy(() => import("./pages/auth/LoginSignupForm"));
+const ProjectDetails = lazy(() => import("./pages/dashboard/projects/project-details/ProjectDetails"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -68,6 +69,17 @@ export const routes = [
         ),
       },
     ],
+  },
+];
+
+export const hiddenRoutes = [
+  {
+    path: "/project-details/:id",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <ProjectDetails />
+      </Suspense>
+    ),
   },
 ];
 

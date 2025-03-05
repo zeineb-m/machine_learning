@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import {
   Card,
   CardBody,
-  CardFooter,
   Avatar,
   Typography,
   Tooltip,
@@ -11,32 +10,20 @@ import {
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { ProfileInfoCard } from "@/widgets/cards";
 import { AuthContext } from "@/context/AuthContext.jsx";
-import { getUser } from "@/api/users"; 
 import { EditProfile } from "./EditProfile.jsx";
 import IsLoading from "@/configs/isLoading.jsx";
+import { getUserWithProjects } from "@/api/project.jsx";
+import { useNavigate } from "react-router-dom";
 
 export function Profile() {
+  const history = useNavigate();
   const { getCurrentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
-  const [projects, setProjects] = useState([
-    {
-      "id": 1,
-      "name": "Project Alpha",
-      "status": "In Progress",
-      "startDate": "2023-10-01",
-      "description": "A project to develop a new feature."
-    },
-    {
-      "id": 2,
-      "name": "Project Beta",
-      "status": "Completed",
-      "startDate": "2023-09-15",
-      "description": "A project to optimize performance."
-    }
-  ]); // State for projects
   const [imageSrc, setImageSrc] = useState("");
   const [updateUser, setUpdateUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [projectsPerPage] = useState(5); 
 
   const toggleEdit = () => setUpdateUser(!updateUser);
 
@@ -45,7 +32,7 @@ export function Profile() {
       const currentUser = getCurrentUser();
       if (currentUser?.id) {
         try {
-          const data = await getUser(currentUser.id);
+          const data = await getUserWithProjects(currentUser.id);
           setUserData(data);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -54,8 +41,6 @@ export function Profile() {
     };
     fetchUserData();
   }, [getCurrentUser]);
-
-
 
   useEffect(() => {
     if (userData?.image?.data) {
@@ -68,15 +53,28 @@ export function Profile() {
     }
   }, [userData]);
 
+
+  const handleDetails = (id) => {
+    history(`/dashboard/project-details/${id}`);
+  }
+
+  const indexOfLastProject = currentPage * projectsPerPage;
+  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+  const currentProjects = userData?.projects?.slice(
+    indexOfFirstProject,
+    indexOfLastProject
+  );
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <>
       {isLoading && <IsLoading />}
       {updateUser && !isLoading ? (
-        <EditProfile />
+        <EditProfile  onBack={toggleEdit}/>
       ) : (
         !isLoading && (
           <>
-            {/* Hero Section */}
             <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-blue-500">
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -149,58 +147,83 @@ export function Profile() {
                 <Typography variant="h4" className="text-gray-900 mb-6">
                   Projects
                 </Typography>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[600px] table-auto">
-                    <thead>
-                      <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
-                        <th className="px-6 py-3 text-left">Project Name</th>
-                        <th className="px-6 py-3 text-left">Status</th>
-                        <th className="px-6 py-3 text-left">Start Date</th>
-                        <th className="px-6 py-3 text-left">Description</th>
-                        <th className="px-6 py-3 text-left">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projects.map((project, index) => (
-                        <tr
-                          key={index}
-                          className={`${
-                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                          } hover:bg-gray-100 transition-colors duration-200`}
-                        >
-                          <td className="px-6 py-4">{project.name}</td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`px-2 py-1 rounded-full text-sm ${
-                                project.status === "Completed"
-                                  ? "bg-green-100 text-green-800"
-                                  : project.status === "In Progress"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
-                              }`}
+                {userData?.projects?.length > 0 ? (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[600px] table-auto">
+                        <thead>
+                          <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                            <th className="px-6 py-3 text-left">Project Name</th>
+                            <th className="px-6 py-3 text-left">Status</th>
+                            <th className="px-6 py-3 text-left">Start Date</th>
+                            <th className="px-6 py-3 text-left">Description</th>
+                            <th className="px-6 py-3 text-left">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {currentProjects?.map((project, index) => (
+                            <tr
+                              key={index}
+                              className={`${
+                                index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                              } hover:bg-gray-100 transition-colors duration-200`}
                             >
-                              {project.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            {new Date(project.startDate).toISOString().slice(0, 10)}
-                          </td>
-                          <td className="px-6 py-4">{project.description}</td>
-                          <td className="px-6 py-4">
-                            <Button
-                              variant="gradient"
-                              size="sm"
-                              color="green"
-                              className="shadow-md hover:shadow-green-500/40"
-                            >
-                              View
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                              <td className="px-6 py-4">{project?.title}</td>
+                              <td className="px-6 py-4">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-sm ${
+                                    project?.status === "Completed"
+                                      ? "bg-green-100 text-green-800"
+                                      : project?.status === "In Progress"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-red-100 text-red-800"
+                                  }`}
+                                >
+                                  {project?.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                {new Date(project?.startDate).toISOString().slice(0, 10)}
+                              </td>
+                              <td className="px-6 py-4">{project?.description}</td>
+                              <td className="px-6 py-4">
+                                <Button
+                                  variant="gradient"
+                                  size="sm"
+                                  color="green"
+                                  className="shadow-md hover:shadow-green-500/40"
+                                  onClick={()=>handleDetails(project._id)}
+                                >
+                                  View
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="flex justify-center mt-6">
+                      {Array.from(
+                        { length: Math.ceil(userData?.projects?.length / projectsPerPage) },
+                        (_, i) => (
+                          <Button
+                            key={i + 1}
+                            variant="text"
+                            color={currentPage === i + 1 ? "green" : "gray"}
+                            onClick={() => paginate(i + 1)}
+                            className="mx-1"
+                          >
+                            {i + 1}
+                          </Button>
+                        )
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <Typography variant="h6" className="text-gray-600">
+                    No projects found.
+                  </Typography>
+                )}
               </div>
             </div>
           </>
