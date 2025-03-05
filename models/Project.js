@@ -17,7 +17,7 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: "Not Started" ,
-    enum: ["Completed", "In Progress", "Not Started"]
+    enum: ["planned", "ongoing", "completed"]
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
