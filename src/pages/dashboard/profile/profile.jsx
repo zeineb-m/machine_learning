@@ -75,7 +75,7 @@ export function Profile() {
       ) : (
         !isLoading && (
           <>
-            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-blue-500">
+            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-purple-500">
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <Typography variant="h1" className="text-white text-5xl font-bold">
@@ -152,7 +152,7 @@ export function Profile() {
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[600px] table-auto">
                         <thead>
-                          <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                          <tr className="bg-gradient-to-r from-green-500 to-purple-500 text-white">
                             <th className="px-6 py-3 text-left">Project Name</th>
                             <th className="px-6 py-3 text-left">Status</th>
                             <th className="px-6 py-3 text-left">Start Date</th>

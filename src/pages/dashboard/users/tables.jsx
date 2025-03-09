@@ -7,32 +7,51 @@ import {
 import UsersTable from "@/components/UsersTable";
 import React, { useState } from "react";
 import AddUser from "./adduser";
+import { motion } from "framer-motion"; 
 
 export function Tables() {
-  const [addUser, setaddUser] = useState(false);
+  const [addUser, setAddUser] = useState(false);
 
-  const fetchAdd = () => {
-    setaddUser(!addUser);
+  const toggleAddUser = () => {
+    setAddUser(!addUser);
   };
-  return (
 
+  return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
-      <p onClick={fetchAdd} className="cursor-pointer">
+      <motion.button
+        whileHover={{ scale: 1.05 }} 
+        whileTap={{ scale: 0.95 }}
+        onClick={toggleAddUser}
+        className="w-max px-6 py-3 bg-gradient-to-r from-green-600 to-purple-600 text-white rounded-lg shadow-lg hover:from-green-700 hover:to-purple-700 transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+      >
         {addUser ? "Hide Form" : "Add User"}
-      </p>
-      {addUser ? (
-        <AddUser />
+      </motion.button>
+
+         {addUser ? (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.5 }} 
+        >
+          <AddUser />
+        </motion.div>
       ) : (
-        <Card>
-          <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
-            <Typography variant="h6" color="white">
-              Users Table
-            </Typography>
-          </CardHeader>
-          <CardBody className="px-0 pt-0 pb-2">
-            <UsersTable />
-          </CardBody>
-        </Card>
+
+          <Card className="shadow-2xl rounded-2xl overflow-hidden">
+            <CardHeader
+              variant="gradient"
+              color="gray"
+              className="mb-8 p-6 bg-gradient-to-r from-green-600 to-purple-600"
+            >
+              <Typography variant="h5" color="white" className="font-bold">
+                Users Table
+              </Typography>
+            </CardHeader>
+            <CardBody className="px-0 pt-0 pb-2">
+              <UsersTable />
+            </CardBody>
+          </Card>
+
       )}
     </div>
   );

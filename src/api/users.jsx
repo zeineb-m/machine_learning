@@ -1,8 +1,7 @@
 import axios from "axios";
 
-export const URL = "http://localhost:3001/api";  // Assure-toi que l'URL est correcte
+export const URL = "http://localhost:3001/api";  
 
-// Fonction pour récupérer les données de l'utilisateur
 export const getUser = async (id) => {
   const res = await axios.get(`${URL}/users/${id}`);
   return res.data;
