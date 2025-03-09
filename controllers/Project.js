@@ -41,7 +41,7 @@ export const getUserWithProjects = async (req , res) => {
 };
 
 export const updateProject = async (req , res) => {
-    const { title, description } = req.body;
+    const { title, description , startDate , status } = req.body;
     const idProject = req.params.id;
     try {
         const project = await Project.findById(idProject);
@@ -49,6 +49,8 @@ export const updateProject = async (req , res) => {
             return res.status(404).json({ message: 'Project not found.' });
         project.title = title;
         project.description = description;
+        project.startDate = startDate ;
+        project.status = status ;
         await project.save();
         res.status(200).json({ message: 'Project updated successfully.' , project: project});
     }catch(error){
