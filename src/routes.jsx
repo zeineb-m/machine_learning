@@ -7,11 +7,11 @@ import {
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
+import AddProject from "./pages/dashboard/projects/AddProject";
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
 const Tables = lazy(() => import("@/pages/dashboard/users/Tables"));
-const LoginSignupForm = lazy(() => import("./pages/auth/LoginSignupForm"));
 const ProjectDetails = lazy(() => import("./pages/dashboard/projects/project-details/ProjectDetails"));
 
 const icon = {
@@ -52,6 +52,16 @@ export const routes = [
           </Suspense>
         ),
       },
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Add New Project",
+        path: "/add-project",
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <AddProject />
+          </Suspense>
+        ),
+      },
     ],
   },
   {
@@ -60,11 +70,11 @@ export const routes = [
     pages: [
       {
         icon: <ServerStackIcon {...icon} />,
-        name: "sign in",
-        path: "/sign-in",
+        name: "projects",
+        path: "/projects",
         element: (
           <Suspense fallback={<IsLoading />}>
-            <LoginSignupForm />
+            <AddProject />
           </Suspense>
         ),
       },

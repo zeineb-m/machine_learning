@@ -1,29 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const IsLoading = () => {
+  const [dots, setDots] = useState('');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length < 3 ? prev + '.' : ''));
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-[1000px] flex items-center justify-center bg-black bg-opacity-75 ">
-      <div className="loader-inner relative h-[60px] w-[100px]">
-        {[...Array(5)].map((_, index) => (
-          <div
-            key={index}
-            className="loader-line-wrap absolute left-0 top-0 h-[50px] w-[100px] origin-[50%_100%] overflow-hidden"
-            style={{
-              animation: `spin 2000ms cubic-bezier(.175, .885, .32, 1.275) infinite`,
-              animationDelay: `-${50 * (index + 1)}ms`,
-            }}
-          >
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-75">
+      <div className="flex flex-col items-center p-4 bg-gray-900 rounded-md shadow-lg border-2 border-gray-700">
+        <div className="mb-3 w-28 h-8 bg-green-200 text-gray-800 text-lg font-mono text-center flex items-center justify-center rounded-md shadow-inner border border-gray-600">
+          LOAD{dots}
+        </div>
+        <div className="grid grid-cols-3 gap-1">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
             <div
-              className="loader-line absolute left-0 right-0 top-0 m-auto h-[100px] w-[100px] rounded-full border-4 border-transparent"
-              style={{
-                borderColor: `hsl(${index * 60}, 80%, 60%)`,
-                height: `${90 - index * 14}px`,
-                width: `${90 - index * 14}px`,
-                top: `${7 + index * 7}px`,
-              }}
-            />
-          </div>
-        ))}
+              key={num}
+              className="w-8 h-8 bg-gray-700 text-white text-sm flex items-center justify-center rounded shadow-md transition duration-300 transform hover:scale-105 hover:bg-gray-600"
+            >
+              {num}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
