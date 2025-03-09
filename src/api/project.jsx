@@ -11,3 +11,7 @@ export const getProjectById = async (id) => {
     const res = await axios.get(`${URL}/project/project-details/${id}`);
     return res.data;
   }
+export const addNewProject = async (data) => {
+  const res = await axios.post(`${URL}/project` , data) ;
+  return res ; 
+}
