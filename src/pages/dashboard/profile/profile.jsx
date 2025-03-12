@@ -1,12 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import {
-  Card,
-  CardBody,
-  Avatar,
-  Typography,
-  Tooltip,
-  Button,
-} from "@material-tailwind/react";
+import { Card, CardBody, Avatar, Typography, Tooltip, Button } from "@material-tailwind/react";
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { ProfileInfoCard } from "@/widgets/cards";
 import { AuthContext } from "@/context/AuthContext.jsx";
@@ -14,8 +7,9 @@ import { EditProfile } from "./EditProfile.jsx";
 import IsLoading from "@/configs/isLoading.jsx";
 import { getUserWithProjects } from "@/api/project.jsx";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"; // Importing motion from framer-motion
 
-export function Profile() {
+const  Profile = () =>  {
   const history = useNavigate();
   const { getCurrentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
@@ -23,14 +17,14 @@ export function Profile() {
   const [updateUser, setUpdateUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [projectsPerPage] = useState(5); 
+  const [projectsPerPage] = useState(5);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  
+
   const handleAddFile = (projectId) => {
-    setSelectedProjectId(projectId);  
-    history("/dashboard/files/add", { state: { projectId } });  
+    setSelectedProjectId(projectId);
+    history("/dashboard/files/add", { state: { projectId } });
   };
-  
+
   const toggleEdit = () => setUpdateUser(!updateUser);
 
   useEffect(() => {
@@ -59,42 +53,54 @@ export function Profile() {
     }
   }, [userData]);
 
-
   const handleDetails = (id) => {
     history(`/dashboard/project-details/${id}`);
-  }
+  };
 
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = userData?.projects?.slice(
-    indexOfFirstProject,
-    indexOfLastProject
-  );
+  const currentProjects = userData?.projects?.slice(indexOfFirstProject, indexOfLastProject);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   const handleBilan = (projectId) => {
-  
     history(`/dashboard/bilan/${projectId}`);
-};
+  };
 
   return (
     <>
       {isLoading && <IsLoading />}
       {updateUser && !isLoading ? (
-        <EditProfile  onBack={toggleEdit}/>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <EditProfile onBack={toggleEdit} />
+        </motion.div>
       ) : (
         !isLoading && (
           <>
-            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-purple-500">
+            <motion.div
+              className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-purple-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <Typography variant="h1" className="text-white text-5xl font-bold">
                   Welcome, {userData?.firstName}!
                 </Typography>
               </div>
-            </div>
-            <Card className="mx-4 -mt-24 mb-6 border-0 shadow-xl rounded-2xl bg-gradient-to-r from-green-50 to-purple-50">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8">
+            </motion.div>
+            <motion.div
+              className="mx-4 -mt-24 mb-6 border-0 shadow-xl rounded-2xl bg-gradient-to-r from-green-50 to-purple-50 relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8 z-[10000]">
                 <div className="flex items-center gap-6">
                   <Avatar
                     src={imageSrc}
@@ -126,8 +132,13 @@ export function Profile() {
                   </Button>
                 </Tooltip>
               </div>
-            </Card>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-4">
+            </motion.div>
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-purple-50">
                 <Typography variant="h4" className="text-gray-900 mb-6">
                   Profile Information
@@ -152,7 +163,12 @@ export function Profile() {
                 </Typography>
                 {userData?.projects?.length > 0 ? (
                   <>
-                    <div className="overflow-x-auto">
+                    <motion.div
+                      className="overflow-x-auto"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
                       <table className="w-full min-w-[600px] table-auto">
                         <thead>
                           <tr className="bg-gradient-to-r from-green-500 to-purple-600 text-white">
@@ -195,58 +211,61 @@ export function Profile() {
                                   size="sm"
                                   color="green"
                                   className="shadow-md hover:shadow-green-500/40"
-                                  onClick={()=>handleDetails(project._id)}
+                                  onClick={() => handleDetails(project._id)}
                                 >
                                   View
                                 </Button>
                                 <Button
-  variant="gradient"
-  size="sm"
-  color="purple"
-  className="shadow-md hover:shadow-purple-600/40 ml-2"
-  onClick={() => handleAddFile(project._id)}
->
-  Add File
-</Button>
-<Button
-    variant="gradient"
-    size="sm"
-    color="red"
-    className="shadow-md hover:shadow-red-500/40 ml-2"
-    onClick={() => handleBilan(project._id)}
-  >
-    Bilan
-  </Button>
+                                  variant="gradient"
+                                  size="sm"
+                                  color="purple"
+                                  className="shadow-md hover:shadow-purple-600/40 ml-2"
+                                  onClick={() => handleAddFile(project._id)}
+                                >
+                                  Add File
+                                </Button>
+                                <Button
+                                  variant="gradient"
+                                  size="sm"
+                                  color="blue"
+                                  className="shadow-md hover:shadow-blue-500/40 ml-2"
+                                  onClick={() => handleBilan(project._id)}
+                                >
+                                  Bilan
+                                </Button>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                    </div>
-                    <div className="flex justify-center mt-6">
-                      {Array.from(
-                        { length: Math.ceil(userData?.projects?.length / projectsPerPage) },
-                        (_, i) => (
-                          <Button
-                            key={i + 1}
-                            variant="text"
-                            color={currentPage === i + 1 ? "green" : "gray"}
-                            onClick={() => paginate(i + 1)}
-                            className="mx-1"
-                          >
-                            {i + 1}
-                          </Button>
-                        )
-                      )}
+                    </motion.div>
+                    {/* Pagination */}
+                    <div className="flex justify-between mt-4">
+                      <Button
+                        variant="outlined"
+                        size="sm"
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="sm"
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={indexOfLastProject >= userData?.projects?.length}
+                      >
+                        Next
+                      </Button>
                     </div>
                   </>
                 ) : (
                   <Typography variant="h6" className="text-gray-600">
-                    No projects found.
+                    No projects available.
                   </Typography>
                 )}
               </div>
-            </div>
+            </motion.div>
           </>
         )
       )}
@@ -254,4 +273,4 @@ export function Profile() {
   );
 }
 
-export default Profile;
+export default Profile ;

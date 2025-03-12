@@ -1,10 +1,11 @@
 import { Suspense, lazy } from "react";
+import { motion } from "framer-motion"; // Import motion
 import {
   HomeIcon,
   UserCircleIcon,
   TableCellsIcon,
   DocumentTextIcon,
-  ClipboardDocumentListIcon, 
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -24,6 +25,13 @@ const icon = {
   className: "w-5 h-5 text-inherit",
 };
 
+const fadeInTransition = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.5 },
+};
+
 export const routes = [
   {
     layout: "dashboard",
@@ -34,7 +42,9 @@ export const routes = [
         path: "/home",
         element: (
           <Suspense fallback={<IsLoading />}>
-            <Home />
+            <motion.div {...fadeInTransition}>
+              <Home />
+            </motion.div>
           </Suspense>
         ),
       },
@@ -44,7 +54,9 @@ export const routes = [
         path: "/profile",
         element: (
           <Suspense fallback={<IsLoading />}>
-            <Profile />
+            <motion.div {...fadeInTransition}>
+              <Profile />
+            </motion.div>
           </Suspense>
         ),
       },
@@ -54,7 +66,9 @@ export const routes = [
         path: "/tables",
         element: (
           <Suspense fallback={<IsLoading />}>
-            <Tables />
+            <motion.div {...fadeInTransition}>
+              <Tables />
+            </motion.div>
           </Suspense>
         ),
       },
@@ -64,17 +78,21 @@ export const routes = [
         path: "/files",
         element: (
           <Suspense fallback={<IsLoading />}>
-            <Files />
+            <motion.div {...fadeInTransition}>
+              <Files />
+            </motion.div>
           </Suspense>
         ),
       },
       {
-        icon: <ClipboardDocumentListIcon {...icon} />, 
+        icon: <ClipboardDocumentListIcon {...icon} />,
         name: "Add New Project",
         path: "/add-project",
         element: (
           <Suspense fallback={<IsLoading />}>
-            <AddProject />
+            <motion.div {...fadeInTransition}>
+              <AddProject />
+            </motion.div>
           </Suspense>
         ),
       },
@@ -87,7 +105,9 @@ export const hiddenRoutes = [
     path: "/project-details/:id",
     element: (
       <Suspense fallback={<IsLoading />}>
-        <ProjectDetails />
+        <motion.div {...fadeInTransition}>
+          <ProjectDetails />
+        </motion.div>
       </Suspense>
     ),
   },
@@ -95,7 +115,9 @@ export const hiddenRoutes = [
     path: "/files/add",
     element: (
       <Suspense fallback={<IsLoading />}>
-        <AddFile />
+        <motion.div {...fadeInTransition}>
+          <AddFile />
+        </motion.div>
       </Suspense>
     ),
   },
@@ -103,7 +125,9 @@ export const hiddenRoutes = [
     path: "/files/edit/:id",
     element: (
       <Suspense fallback={<IsLoading />}>
-        <EditFile />
+        <motion.div {...fadeInTransition}>
+          <EditFile />
+        </motion.div>
       </Suspense>
     ),
   },
@@ -111,7 +135,9 @@ export const hiddenRoutes = [
     path: "/files/:id",
     element: (
       <Suspense fallback={<IsLoading />}>
-        <FileView />
+        <motion.div {...fadeInTransition}>
+          <FileView />
+        </motion.div>
       </Suspense>
     ),
   },
@@ -119,7 +145,9 @@ export const hiddenRoutes = [
     path: "/bilan/:projectId",
     element: (
       <Suspense fallback={<IsLoading />}>
-        <Bilan />
+        <motion.div {...fadeInTransition}>
+          <Bilan />
+        </motion.div>
       </Suspense>
     ),
   },
