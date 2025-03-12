@@ -24,7 +24,13 @@ export function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [projectsPerPage] = useState(5); 
-
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  
+  const handleAddFile = (projectId) => {
+    setSelectedProjectId(projectId);  
+    history("/dashboard/files/add", { state: { projectId } });  
+  };
+  
   const toggleEdit = () => setUpdateUser(!updateUser);
 
   useEffect(() => {
@@ -66,6 +72,10 @@ export function Profile() {
   );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const handleBilan = (projectId) => {
+  
+    history(`/dashboard/bilan/${projectId}`);
+};
 
   return (
     <>
@@ -75,7 +85,7 @@ export function Profile() {
       ) : (
         !isLoading && (
           <>
-            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-purple-500">
+            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-blue-500">
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <Typography variant="h1" className="text-white text-5xl font-bold">
@@ -119,10 +129,7 @@ export function Profile() {
                 </Tooltip>
               </div>
             </Card>
-
-            {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-4">
-              {/* Profile Information Card */}
               <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-blue-50">
                 <Typography variant="h4" className="text-gray-900 mb-6">
                   Profile Information
@@ -141,8 +148,6 @@ export function Profile() {
                   }}
                 />
               </Card>
-
-              {/* Projects Section */}
               <div className="col-span-2">
                 <Typography variant="h4" className="text-gray-900 mb-6">
                   Projects
@@ -152,7 +157,7 @@ export function Profile() {
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[600px] table-auto">
                         <thead>
-                          <tr className="bg-gradient-to-r from-green-500 to-purple-500 text-white">
+                          <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
                             <th className="px-6 py-3 text-left">Project Name</th>
                             <th className="px-6 py-3 text-left">Status</th>
                             <th className="px-6 py-3 text-left">Start Date</th>
@@ -196,6 +201,24 @@ export function Profile() {
                                 >
                                   View
                                 </Button>
+                                <Button
+  variant="gradient"
+  size="sm"
+  color="blue"
+  className="shadow-md hover:shadow-blue-500/40 ml-2"
+  onClick={() => handleAddFile(project._id)}
+>
+  Add File
+</Button>
+<Button
+    variant="gradient"
+    size="sm"
+    color="red"
+    className="shadow-md hover:shadow-red-500/40 ml-2"
+    onClick={() => handleBilan(project._id)}
+  >
+    Bilan
+  </Button>
                               </td>
                             </tr>
                           ))}

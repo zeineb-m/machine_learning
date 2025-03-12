@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import IsLoading from "@/configs/isLoading";
 import UpdateProject from "../UpdateProject";
 import { AuthContext } from "@/context/AuthContext";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2"; 
 
 const ProjectDetails = () => {
   const { getCurrentUser } = useContext(AuthContext);

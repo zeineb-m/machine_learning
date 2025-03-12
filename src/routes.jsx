@@ -4,6 +4,7 @@ import {
   UserCircleIcon,
   TableCellsIcon,
   ServerStackIcon,
+  DocumentTextIcon, 
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -13,6 +14,11 @@ const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
 const Tables = lazy(() => import("@/pages/dashboard/users/Tables"));
 const ProjectDetails = lazy(() => import("./pages/dashboard/projects/project-details/ProjectDetails"));
+const EditFile = lazy(() => import("./pages/dashboard/files/EditFile"));
+const FileView = lazy(() => import("./pages/dashboard/files/FileView"));
+const AddFile = lazy(() => import("./pages/dashboard/files/AddFile"));
+const Bilan = lazy(() => import("./pages/dashboard/files/Bilan"));
+const Files = lazy(()=> import('./pages/dashboard/files/Files'))
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -49,6 +55,16 @@ export const routes = [
         element: (
           <Suspense fallback={<IsLoading />}>
             <Tables />
+          </Suspense>
+        ),
+      },
+      {
+        icon: <DocumentTextIcon {...icon} />,
+        name: "Files",
+        path: "/files",
+        element: (
+          <Suspense fallback={<IsLoading />}>
+            <Files />
           </Suspense>
         ),
       },
@@ -91,6 +107,40 @@ export const hiddenRoutes = [
       </Suspense>
     ),
   },
+  {
+    path: "/files/add", 
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <AddFile />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/files/edit/:id", 
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <EditFile />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/files/:id",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <FileView />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/bilan/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+          <Bilan />
+      </Suspense>
+    ),
+  },
+
+  
 ];
 
 export default routes;
