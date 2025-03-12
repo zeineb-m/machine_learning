@@ -3,8 +3,8 @@ import {
   HomeIcon,
   UserCircleIcon,
   TableCellsIcon,
-  ServerStackIcon,
-  DocumentTextIcon, 
+  DocumentTextIcon,
+  ClipboardDocumentListIcon, 
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -18,7 +18,7 @@ const EditFile = lazy(() => import("./pages/dashboard/files/EditFile"));
 const FileView = lazy(() => import("./pages/dashboard/files/FileView"));
 const AddFile = lazy(() => import("./pages/dashboard/files/AddFile"));
 const Bilan = lazy(() => import("./pages/dashboard/files/Bilan"));
-const Files = lazy(()=> import('./pages/dashboard/files/Files'))
+const Files = lazy(() => import('./pages/dashboard/files/Files'));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -30,7 +30,7 @@ export const routes = [
     pages: [
       {
         icon: <HomeIcon {...icon} />,
-        name: "dashboard",
+        name: "Dashboard",
         path: "/home",
         element: (
           <Suspense fallback={<IsLoading />}>
@@ -69,25 +69,9 @@ export const routes = [
         ),
       },
       {
-        icon: <TableCellsIcon {...icon} />,
+        icon: <ClipboardDocumentListIcon {...icon} />, 
         name: "Add New Project",
         path: "/add-project",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <AddProject />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-  {
-    title: "projects",
-    layout: "project",
-    pages: [
-      {
-        icon: <ServerStackIcon {...icon} />,
-        name: "projects",
-        path: "/projects",
         element: (
           <Suspense fallback={<IsLoading />}>
             <AddProject />
@@ -108,7 +92,7 @@ export const hiddenRoutes = [
     ),
   },
   {
-    path: "/files/add", 
+    path: "/files/add",
     element: (
       <Suspense fallback={<IsLoading />}>
         <AddFile />
@@ -116,7 +100,7 @@ export const hiddenRoutes = [
     ),
   },
   {
-    path: "/files/edit/:id", 
+    path: "/files/edit/:id",
     element: (
       <Suspense fallback={<IsLoading />}>
         <EditFile />
@@ -135,12 +119,10 @@ export const hiddenRoutes = [
     path: "/bilan/:projectId",
     element: (
       <Suspense fallback={<IsLoading />}>
-          <Bilan />
+        <Bilan />
       </Suspense>
     ),
   },
-
-  
 ];
 
 export default routes;

@@ -1,25 +1,23 @@
-/* Bilan.css */
 .bilan-container {
     display: flex;
 }
 
 .bilan-table {
-    flex: 1; /* Chaque tableau occupe la moitié de l'espace disponible */
-    border-collapse: collapse; /* Fusionner les bordures des cellules */
+    flex: 1; 
+    border-collapse: collapse; 
 }
 
 .bilan-table th,
 .bilan-table td {
-    border: 1px solid #ddd; /* Bordures fines pour les cellules */
+    border: 1px solid #ddd; 
     padding: 8px;
     text-align: left;
 }
 
 .bilan-table th {
-    background-color: #f4f4f4; /* Fond légèrement gris pour les en-têtes */
+    background-color: #f4f4f4; 
 }
 
-/* Ajouter une bordure droite à la première colonne (ACTIF) */
 .bilan-table:first-child {
-    border-right: 2px solid #000; /* Ligne fine verticale comme séparateur */
+    border-right: 2px solid #000; 
 }

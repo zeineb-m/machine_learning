@@ -1,51 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Button } from "@material-tailwind/react";
+import { Typography, Button, Input } from "@material-tailwind/react";
 import { getFiles, deleteFile } from "../../../api/files"; 
+import IsLoading from "@/configs/isLoading";
 
 const Files = () => {
   const [files, setFiles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filesPerPage] = useState(10);
-  
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
         const data = await getFiles(); 
-        setFiles(data); 
+        setFiles(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching files", error);
       }
     };
-
     fetchFiles();
-  }, []); 
+  }, []);
+
+  const filteredFiles = files.filter((file) =>
+    file.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    file.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const indexOfLastFile = currentPage * filesPerPage;
   const indexOfFirstFile = indexOfLastFile - filesPerPage;
-  const currentFiles = files.slice(indexOfFirstFile, indexOfLastFile);
+  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleViewClick = (fileId) => {
-    navigate(`/dashboard/files/${fileId}`);
-  };
-
-  // Redirige vers la page d'édition en passant le fichier à éditer dans l'état
-  const handleEditClick = (file) => {
-    navigate(`/dashboard/files/edit/${file._id}`, { state: { file } });
-  };
-
-  // Supprime le fichier et met à jour la liste
   const handleDeleteClick = async (fileId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this file?");
-    if (confirmDelete) {
+    if (window.confirm("Are you sure you want to delete this file?")) {
       try {
         await deleteFile(fileId);
-        // Mise à jour de la liste en retirant le fichier supprimé
-        setFiles(prevFiles => prevFiles.filter(file => file._id !== fileId));
+        setFiles((prevFiles) => prevFiles.filter((file) => file._id !== fileId));
         alert("File deleted successfully!");
       } catch (error) {
         console.error("Error deleting file", error);
@@ -55,29 +51,39 @@ const Files = () => {
   };
 
   return (
-    <div className="col-span-2">
-      <div className="flex justify-between items-center mb-4">
-  <Typography variant="h4" className="text-gray-900">
-    Files
-  </Typography>
-  <Button
-    variant="contained"
-    color="green"
-    onClick={() => navigate('/dashboard/bilan')}
-  >
-    Voir Bilan
-  </Button>
-</div>
+    <>
+      {loading && <IsLoading />}
+      <div className="p-6 bg-white shadow-lg rounded-lg my-5">
+        <div className="flex justify-between items-center mb-6">
+          <Typography variant="h4" className="text-gray-900 font-bold">
+            Files Management
+          </Typography>
+          <Button color="green" onClick={() => navigate("/dashboard/bilan")}>See Bilan</Button>
+        </div>
 
-      <Typography variant="h4" className="text-gray-900 mb-6">
-        Files
-      </Typography>
-      {files.length > 0 ? (
-        <>
+        <div className="flex justify-between items-center mb-4">
+          <Input
+            type="text"
+            placeholder="Search by title or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-1/3 border border-gray-300 px-4 py-2 rounded-lg"
+          />
+          <div className="flex space-x-4">
+            <Typography variant="h6" className="text-gray-700">
+              Total Files: <span className="font-bold">{files.length}</span>
+            </Typography>
+            <Typography variant="h6" className="text-gray-700">
+              Projects: <span className="font-bold">{new Set(files.map(f => f.project)).size}</span>
+            </Typography>
+          </div>
+        </div>
+
+        {filteredFiles.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px] table-auto">
+            <table className="w-full border-collapse shadow-sm">
               <thead>
-                <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                <tr className="bg-gradient-to-r from-green-500 to-purple-500 text-white">
                   <th className="px-6 py-3 text-left">File Name</th>
                   <th className="px-6 py-3 text-left">Project ID</th>
                   <th className="px-6 py-3 text-left">Description</th>
@@ -88,64 +94,44 @@ const Files = () => {
               <tbody>
                 {currentFiles.map((file, index) => (
                   <tr
-                    key={file._id} 
-                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition-colors duration-200`}
+                    key={file._id}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition duration-200`}
                   >
-                    <td className="px-6 py-4">{file?.title}</td>
-                    <td className="px-6 py-4">{file?.project}</td>
-                    <td className="px-6 py-4">{file?.description}</td>
-                    <td className="px-6 py-4">{file?.url.split("/").pop()}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleViewClick(file._id)}
-                        >
-                          View
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="blue"
-                          onClick={() => handleEditClick(file)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="red"
-                          onClick={() => handleDeleteClick(file._id)}
-                        >
-                          Delete
-                        </Button>
-                      </div>
+                    <td className="px-6 py-4">{file.title}</td>
+                    <td className="px-6 py-4">{file.project}</td>
+                    <td className="px-6 py-4">{file.description}</td>
+                    <td className="px-6 py-4 truncate max-w-xs">{file.url.split("/").pop()}</td>
+                    <td className="px-6 py-4 flex space-x-2">
+                      <Button color="blue" onClick={() => navigate(`/dashboard/files/${file._id}`)}>View</Button>
+                      <Button color="purple" onClick={() => navigate(`/dashboard/files/edit/${file._id}`, { state: { file } })}>Edit</Button>
+                      <Button color="red" onClick={() => handleDeleteClick(file._id)}>Delete</Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        ) : (
+          <Typography variant="h6" className="text-gray-600 mt-4 text-center">
+            No files found.
+          </Typography>
+        )}
 
-          <div className="flex justify-center mt-6">
-            {Array.from({ length: Math.ceil(files.length / filesPerPage) }, (_, i) => (
-              <Button
-                key={i + 1}
-                variant="outlined"
-                color={currentPage === i + 1 ? "primary" : "default"}
-                onClick={() => paginate(i + 1)}
-                className="mx-1"
-              >
-                {i + 1}
-              </Button>
-            ))}
-          </div>
-        </>
-      ) : (
-        <Typography variant="h6" className="text-gray-600">
-          No files found.
-        </Typography>
-      )}
-    </div>
+        <div className="flex justify-center mt-6">
+          {Array.from({ length: Math.ceil(filteredFiles.length / filesPerPage) }, (_, i) => (
+            <Button
+              key={i + 1}
+              variant="outlined"
+              color={currentPage === i + 1 ? "primary" : "default"}
+              onClick={() => paginate(i + 1)}
+              className="mx-1"
+            >
+              {i + 1}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

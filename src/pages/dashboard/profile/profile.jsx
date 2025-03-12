@@ -85,7 +85,7 @@ export function Profile() {
       ) : (
         !isLoading && (
           <>
-            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-blue-500">
+            <div className="relative mt-8 h-96 w-full overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-purple-500">
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <Typography variant="h1" className="text-white text-5xl font-bold">
@@ -93,9 +93,7 @@ export function Profile() {
                 </Typography>
               </div>
             </div>
-
-            {/* Profile Card */}
-            <Card className="mx-4 -mt-24 mb-6 border-0 shadow-xl rounded-2xl bg-gradient-to-r from-green-50 to-blue-50">
+            <Card className="mx-4 -mt-24 mb-6 border-0 shadow-xl rounded-2xl bg-gradient-to-r from-green-50 to-purple-50">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8">
                 <div className="flex items-center gap-6">
                   <Avatar
@@ -130,7 +128,7 @@ export function Profile() {
               </div>
             </Card>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-4">
-              <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-blue-50">
+              <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-purple-50">
                 <Typography variant="h4" className="text-gray-900 mb-6">
                   Profile Information
                 </Typography>
@@ -157,7 +155,7 @@ export function Profile() {
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[600px] table-auto">
                         <thead>
-                          <tr className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                          <tr className="bg-gradient-to-r from-green-500 to-purple-600 text-white">
                             <th className="px-6 py-3 text-left">Project Name</th>
                             <th className="px-6 py-3 text-left">Status</th>
                             <th className="px-6 py-3 text-left">Start Date</th>
@@ -204,8 +202,8 @@ export function Profile() {
                                 <Button
   variant="gradient"
   size="sm"
-  color="blue"
-  className="shadow-md hover:shadow-blue-500/40 ml-2"
+  color="purple"
+  className="shadow-md hover:shadow-purple-600/40 ml-2"
   onClick={() => handleAddFile(project._id)}
 >
   Add File

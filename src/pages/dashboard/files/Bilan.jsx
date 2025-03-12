@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import './Bilan.css';
+import IsLoading from '@/configs/isLoading';
 function Bilan() {
-  const { projectId } = useParams(); // Utilisation de useParams pour obtenir l'ID du projet
+  const { projectId } = useParams(); 
   const [bilan, setBilan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +30,7 @@ function Bilan() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <IsLoading />;
   if (error) return <div>{error}</div>;
 
   return (

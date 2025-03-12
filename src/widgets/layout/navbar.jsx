@@ -21,7 +21,7 @@ export function Navbar({ brandName, routes, action }) {
   }, []);
 
   const navList = (
-    <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+    <ul className="flex flex-col gap-2 lg:flex-row lg:gap-6 lg:mb-0 lg:mt-0 mb-4 mt-2 items-center">
       {routes.map(({ name, path, icon }) => (
         <Typography
           key={name}
@@ -30,10 +30,13 @@ export function Navbar({ brandName, routes, action }) {
           color="blue-gray"
           className="capitalize"
         >
-          <Link to={path} className="flex items-center gap-1 p-1 font-normal">
+          <Link
+            to={path}
+            className="flex items-center gap-2 p-2 font-medium text-gray-700 hover:text-blue-600 transition-colors"
+          >
             {icon &&
               React.createElement(icon, {
-                className: "w-[18px] h-[18px] opacity-50 mr-1",
+                className: "w-5 h-5 opacity-75 mr-2",
               })}
             {name}
           </Link>
@@ -43,17 +46,17 @@ export function Navbar({ brandName, routes, action }) {
   );
 
   return (
-    <MTNavbar className="p-3">
+    <MTNavbar className="p-4 bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
         <Link to="/">
           <Typography
-            variant="small"
-            className="mr-4 ml-2 cursor-pointer py-1.5 font-bold"
+            variant="h6"
+            className="mr-4 ml-2 cursor-pointer font-bold text-xl text-blue-800"
           >
             {brandName}
           </Typography>
         </Link>
-        <div className="hidden lg:block">{navList}</div>
+        <div className="hidden lg:flex">{navList}</div>
         {React.cloneElement(action, {
           className: "hidden lg:inline-block",
         })}
@@ -71,12 +74,10 @@ export function Navbar({ brandName, routes, action }) {
         </IconButton>
       </div>
       <Collapse open={openNav}>
-        <div className="container mx-auto">
-          {navList}
-          {React.cloneElement(action, {
-            className: "w-full block lg:hidden",
-          })}
-        </div>
+        <div className="container mx-auto mt-4">{navList}</div>
+        {React.cloneElement(action, {
+          className: "w-full block lg:hidden mt-4",
+        })}
       </Collapse>
     </MTNavbar>
   );
@@ -88,9 +89,10 @@ Navbar.defaultProps = {
     <a
       href="https://www.creative-tim.com/product/material-tailwind-dashboard-react"
       target="_blank"
+      rel="noopener noreferrer"
     >
-      <Button variant="gradient" size="sm" fullWidth>
-        free download
+      <Button variant="outlined" size="sm" className="w-full">
+        Free Download
       </Button>
     </a>
   ),
