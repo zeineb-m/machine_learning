@@ -35,7 +35,7 @@ const fadeInTransition = {
 };
 
 export const RoutesComponent = () => {
-  const { user } = useContext(AuthContext); // Get user from context
+  const { user } = useContext(AuthContext); 
 
   return [
     {

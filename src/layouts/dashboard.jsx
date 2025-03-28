@@ -10,16 +10,12 @@ import {
 import { Suspense, useContext } from "react";
 import { motion } from "framer-motion";
 import { useMaterialTailwindController, setOpenConfigurator } from "@/context";
-import { AuthContext } from "@/context/AuthContext";
 import IsLoading from "@/configs/isLoading";
 import RoutesComponent, { hiddenRoutes } from "@/routes";
 
 export function Dashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
-  const { user } = useContext(AuthContext);
-
-  // Animation transition settings
   const fadeInTransition = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
