@@ -1,5 +1,7 @@
 import { Suspense, lazy } from "react";
-import { motion } from "framer-motion"; // Import motion
+import { motion } from "framer-motion"; 
+import { AuthContext } from "./context/AuthContext";
+import { useContext } from "react";
 import {
   HomeIcon,
   UserCircleIcon,
@@ -32,73 +34,77 @@ const fadeInTransition = {
   transition: { duration: 0.5 },
 };
 
-export const routes = [
-  {
-    layout: "dashboard",
-    pages: [
-      {
-        icon: <HomeIcon {...icon} />,
-        name: "Dashboard",
-        path: "/home",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <motion.div {...fadeInTransition}>
-              <Home />
-            </motion.div>
-          </Suspense>
-        ),
-      },
-      {
-        icon: <UserCircleIcon {...icon} />,
-        name: "Profile",
-        path: "/profile",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <motion.div {...fadeInTransition}>
-              <Profile />
-            </motion.div>
-          </Suspense>
-        ),
-      },
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "Users",
-        path: "/tables",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <motion.div {...fadeInTransition}>
-              <Tables />
-            </motion.div>
-          </Suspense>
-        ),
-      },
-      {
-        icon: <DocumentTextIcon {...icon} />,
-        name: "Files",
-        path: "/files",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <motion.div {...fadeInTransition}>
-              <Files />
-            </motion.div>
-          </Suspense>
-        ),
-      },
-      {
-        icon: <ClipboardDocumentListIcon {...icon} />,
-        name: "Add New Project",
-        path: "/add-project",
-        element: (
-          <Suspense fallback={<IsLoading />}>
-            <motion.div {...fadeInTransition}>
-              <AddProject />
-            </motion.div>
-          </Suspense>
-        ),
-      },
-    ],
-  },
-];
+export const RoutesComponent = () => {
+  const { user } = useContext(AuthContext); // Get user from context
+
+  return [
+    {
+      layout: "dashboard",
+      pages: [
+        {
+          icon: <HomeIcon {...icon} />,
+          name: "Dashboard",
+          path: "/home",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <Home />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <UserCircleIcon {...icon} />,
+          name: "Profile",
+          path: "/profile",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <Profile />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        user?.role === "admin" && {
+          icon: <TableCellsIcon {...icon} />,
+          name: "Users",
+          path: "/tables",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <Tables />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <DocumentTextIcon {...icon} />,
+          name: "Files",
+          path: "/files",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <Files />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <ClipboardDocumentListIcon {...icon} />,
+          name: "Add New Project",
+          path: "/add-project",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <AddProject />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+      ].filter(Boolean), 
+    },
+  ];
+};
 
 export const hiddenRoutes = [
   {
@@ -153,4 +159,4 @@ export const hiddenRoutes = [
   },
 ];
 
-export default routes;
+export default RoutesComponent;

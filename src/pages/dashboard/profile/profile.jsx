@@ -7,7 +7,8 @@ import { EditProfile } from "./EditProfile.jsx";
 import IsLoading from "@/configs/isLoading.jsx";
 import { getUserWithProjects } from "@/api/project.jsx";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"; // Importing motion from framer-motion
+import { motion } from "framer-motion"; 
+import { Typewriter } from "react-simple-typewriter";
 
 const  Profile = () =>  {
   const history = useNavigate();
@@ -116,7 +117,7 @@ const  Profile = () =>  {
                     <Typography variant="h6" className="text-gray-600">
                       {userData?.role || "User"}
                     </Typography>
-                  </div>
+                  </div> 
                 </div>
 
                 <Tooltip content="Edit Profile">
@@ -140,9 +141,25 @@ const  Profile = () =>  {
               transition={{ duration: 0.5 }}
             >
               <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-purple-50">
-                <Typography variant="h4" className="text-gray-900 mb-6">
-                  Profile Information
-                </Typography>
+              <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Typography
+        variant="h4"
+        className="text-gray-900 mb-6 font-serif"
+      >
+        <Typewriter
+          words={["Profile Information"]}
+          loop={false}
+          cursor
+          cursorStyle="_"
+          typeSpeed={100}
+          deleteSpeed={50}
+        />
+      </Typography>
+    </motion.div>
                 <ProfileInfoCard
                   description="about me"
                   details={{

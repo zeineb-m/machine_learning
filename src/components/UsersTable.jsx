@@ -20,22 +20,31 @@ const UsersTable = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1); // Current page state
-  const [usersPerPage] = useState(6); // Number of users per page
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [usersPerPage] = useState(6); 
   const URL = "http://localhost:3001/api";
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${URL}/users`);
+      const response = await axios.get(`${URL}/users`, {
+        headers: {
+          token: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+  
+      if (response.status !== 200) { 
+        throw new Error(response.data.message || 'Something went wrong!');
+      }
+  
       setUsers(response.data);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      Swal.fire("Error", error.response?.data?.message || error.message, "error");
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchUsers();
   }, []);

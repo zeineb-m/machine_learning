@@ -281,15 +281,20 @@ const LoginSignupForm = () => {
       }
   
       const res = await auth(email, password);
+      const token = res.data.token; // Get token from the response
+  
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: {
           user: res.data.user,
-          token: res.data.token,
+          token: token,
         },
       });
   
-      navigate("/");
+      localStorage.setItem("token", token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  
+      navigate("/"); 
     } catch (err) {
       const errorMessage = err.response?.data.message || "Login failed";
       dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
@@ -301,6 +306,8 @@ const LoginSignupForm = () => {
       });
     }
   };
+  
+  
 
   const handleForgotPassword = () => {
     alert("Please check your email for the password reset link");

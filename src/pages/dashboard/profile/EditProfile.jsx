@@ -3,9 +3,11 @@ import { Card, CardBody, Typography, Button, Input } from "@material-tailwind/re
 import { AuthContext } from "@/context/AuthContext.jsx";
 import { getUser, updateUser, changePassword } from "@/api/users";
 import Swal from "sweetalert2";
+import IsLoading from "@/configs/isLoading";
 
 export function EditProfile({ onBack }) {
   const { getCurrentUser } = useContext(AuthContext);
+  const [loading , setLoading] = useState(true);
   const currentUser = getCurrentUser();
 
   const [activeTab, setActiveTab] = useState("profile");
@@ -35,6 +37,7 @@ export function EditProfile({ onBack }) {
           phone: data.phone || "",
           email: data.email || "",
         });
+        setLoading(false);
       } catch (error) {
         console.error("Error loading user data:", error);
       }
@@ -82,6 +85,8 @@ export function EditProfile({ onBack }) {
   };
 
   return (
+    <>
+    {loading && <IsLoading />}
     <Card className="mx-auto mt-8 mb-6 w-full max-w-2xl border border-gray-200 shadow-lg">
       <CardBody className="p-6">
         <Typography
@@ -146,5 +151,6 @@ export function EditProfile({ onBack }) {
         )}
       </CardBody>
     </Card>
+    </>
   );
 }

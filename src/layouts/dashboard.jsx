@@ -7,17 +7,30 @@ import {
   Configurator,
   Footer,
 } from "@/widgets/layout";
-import routes, { hiddenRoutes } from "@/routes";  
+import { Suspense, useContext } from "react";
+import { motion } from "framer-motion";
 import { useMaterialTailwindController, setOpenConfigurator } from "@/context";
+import { AuthContext } from "@/context/AuthContext";
+import IsLoading from "@/configs/isLoading";
+import RoutesComponent, { hiddenRoutes } from "@/routes";
 
 export function Dashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
+  const { user } = useContext(AuthContext);
+
+  // Animation transition settings
+  const fadeInTransition = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.5 },
+  };
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
       <Sidenav
-        routes={routes}  
+        routes={RoutesComponent()}  
         brandImg={
           sidenavType === "dark" ? "/img/logo-ct.png" : "/img/logo-ct-dark.png"
         }
@@ -34,19 +47,29 @@ export function Dashboard() {
         >
           <Cog6ToothIcon className="h-5 w-5" />
         </IconButton>
-        <Routes>
-          {routes.map(
-            ({ layout, pages }) =>
-              layout === "dashboard" &&
-              pages.map(({ path, element }) => (
-                <Route key={path} exact path={path} element={element} />
-              ))
-          )}
+        <Suspense fallback={<IsLoading />}>
+          <Routes>
+            {RoutesComponent().map(
+              ({ layout, pages }) =>
+                layout === "dashboard" &&
+                pages.map(({ path, element }) => (
+                  <Route
+                    key={path}
+                    path={path}
+                    element={<motion.div {...fadeInTransition}>{element}</motion.div>}
+                  />
+                ))
+            )}
 
-          {hiddenRoutes.map(({ path, element }) => (
-            <Route key={path} exact path={path} element={element} />
-          ))}
-        </Routes>
+            {hiddenRoutes.map(({ path, element }) => (
+              <Route
+                key={path}
+                path={path}
+                element={<motion.div {...fadeInTransition}>{element}</motion.div>}
+              />
+            ))}
+          </Routes>
+        </Suspense>
         <div className="text-blue-gray-600">
           <Footer />
         </div>

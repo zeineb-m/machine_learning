@@ -28,33 +28,39 @@ const AddUser = () => {
   const [imagePreview, setImagePreview] = useState(null);
 
   const onSubmit = async (data) => {
-    // Vérification du rôle avant d'envoyer la requête
     if (!["accountant", "financial manager", "auditeur", "manager controller"].includes(data.role)) {
-      Swal.fire("Error", "Invalid role. Please choose a valid role.", "error");
-      return; // Arrêter l'exécution si le rôle est invalide
+        Swal.fire("Error", "Invalid role. Please choose a valid role.", "error");
+        return;
     }
 
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
-      if (key !== "image") formData.append(key, data[key]);
+        if (key !== "image") formData.append(key, data[key]);
     });
     if (data.image[0]) {
-      formData.append("image", data.image[0]);
+        formData.append("image", data.image[0]);
     }
 
     try {
-      const response = await fetch("http://localhost:3001/api/users/add", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
+        const response = await fetch("http://localhost:3001/api/users/add", {
+            headers: {
+                token: `Bearer ${localStorage.getItem("token")}`, 
+            },
+            method: "POST",
+            body: formData,
+        });
 
-      if (!response.ok) throw new Error(result.message);
-      Swal.fire("Success", "User added successfully!", "success");
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Something went wrong!");
+        }
+
+        Swal.fire("Success", "User added successfully!", "success");
     } catch (error) {
-      Swal.fire("Error", error.message, "error");
+        Swal.fire("Error", error.message, "error");
     }
-  };
+};
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-2xl rounded-2xl transform transition-all duration-300 hover:shadow-3xl">
