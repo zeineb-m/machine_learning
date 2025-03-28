@@ -13,7 +13,6 @@ try {
 } catch(error) {
     res.status(500).json({ error: error })
 }
-   
 }
 
 export const getUserById = async (req, res) => {
