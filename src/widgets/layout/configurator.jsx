@@ -37,6 +37,8 @@ export function Configurator() {
   const { openConfigurator, sidenavColor, sidenavType, fixedNavbar } =
     controller;
 
+  const [stars, setStars] = React.useState(null); // Déclare l'état pour stocker les stars
+
   const sidenavColors = {
     white: "from-gray-100 to-gray-100 border-gray-200",
     dark: "from-black to-black border-gray-200",
@@ -56,7 +58,7 @@ export function Configurator() {
       "https://api.github.com/repos/creativetimofficial/material-tailwind-dashboard-react"
     )
       .then((response) => response.json())
-      .then((data) => setStars(formatNumber(data.stargazers_count, 1)));
+      .then((data) => setStars(formatNumber(data.stargazers_count, 1))); // Utilise setStars pour mettre à jour l'état
   }, []);
 
   return (
