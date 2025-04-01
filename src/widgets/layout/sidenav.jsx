@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { LogOut } from "lucide-react";
 import {
   Avatar,
   Button,
@@ -8,8 +9,13 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useMaterialTailwindController, setOpenSidenav } from "@/context";
+import {AuthContext} from "../../context/AuthContext.jsx";
+import { useContext } from "react";
 
 export function Sidenav({ brandImg, brandName, routes }) {
+
+  const { Logout } = useContext(AuthContext);
+
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavColor, sidenavType, openSidenav } = controller;
   const sidenavTypes = {
@@ -17,6 +23,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
     white: "bg-white shadow-sm",
     transparent: "bg-transparent",
   };
+
 
   return (
     <aside
@@ -90,6 +97,10 @@ export function Sidenav({ brandImg, brandName, routes }) {
             ))}
           </ul>
         ))}
+      </div>
+      <div onClick = {()=>Logout()} className="text-center position-absolute bottom-0 text-white bg-green-600 w-[70%] m-auto p-4 rounded-xl cursor-pointer hover:bg-green-800 transition duration-300 ease-in-out flex items-center ">
+        <LogOut />
+         <p className="ml-2">Logout</p>
       </div>
     </aside>
   );
