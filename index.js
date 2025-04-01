@@ -4,13 +4,14 @@ import Auth from './routes/Auth.js';
 import User from './routes/User.js';
 import Project from './routes/Project.js';
 import fileRoutes from "./routes/Files.js";
+import Python from "./routes/python.js";
 import { connectDatabase } from './database/dbConnect.js';
 import http from "http";
 import cors from "cors";
-
+import { exec } from 'child_process';
 import path from "path";
 import { fileURLToPath } from "url";
-
+import axios from 'axios';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -37,29 +38,7 @@ app.use("/api/users", User);
 app.use("/api/project", Project);
 app.use("/api/files", fileRoutes);
 
-
-app.get('/generate-bilan', (req, res) => {
-  const projectId = req.query.project_id;  
-  if (!projectId) {
-    return res.status(400).send('Project ID is required');
-  }
-
-  exec(`python3 C:\\fichier python\\bilan.py ${projectId}`, (err, stdout, stderr) => {
-      if (err) {
-          console.error(`Erreur lors de l'exécution du script: ${stderr}`);
-          return res.status(500).send('Erreur interne');
-      }
-
-      try {
-          const bilan = JSON.parse(stdout);  
-          res.json(bilan);  
-      } catch (e) {
-          console.error("Erreur de parsing JSON", e);
-          return res.status(500).send('Erreur dans la génération du bilan');
-      }
-  });
-});
-
+app.use("/python",Python);
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
