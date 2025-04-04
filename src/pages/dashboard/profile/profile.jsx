@@ -1,6 +1,6 @@
-import { useState, useEffect, useContext } from "react";
-import { Card, CardBody, Avatar, Typography, Tooltip, Button } from "@material-tailwind/react";
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect, useContext, useRef } from "react";
+import { Card, CardBody, Avatar, Typography, Tooltip, Button, Input } from "@material-tailwind/react";
+import { PencilIcon, MagnifyingGlassIcon, MicrophoneIcon } from "@heroicons/react/24/solid";
 import { ProfileInfoCard } from "@/widgets/cards";
 import { AuthContext } from "@/context/AuthContext.jsx";
 import { EditProfile } from "./EditProfile.jsx";
@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"; 
 import { Typewriter } from "react-simple-typewriter";
 
-const  Profile = () =>  {
+const Profile = () => {
   const history = useNavigate();
   const { getCurrentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
@@ -20,6 +20,58 @@ const  Profile = () =>  {
   const [currentPage, setCurrentPage] = useState(1);
   const [projectsPerPage] = useState(5);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  // Initialize speech recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'fr-FR';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setSearchTerm(transcript);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        if (isListening) {
+          recognitionRef.current.start();
+        }
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [isListening]);
+
+  const toggleListen = () => {
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (error) {
+        console.error('Could not start speech recognition:', error);
+      }
+    }
+  };
 
   const handleAddFile = (projectId) => {
     setSelectedProjectId(projectId);
@@ -58,9 +110,24 @@ const  Profile = () =>  {
     history(`/dashboard/project-details/${id}`);
   };
 
+  // Filter projects with punctuation removal
+  const filteredProjects = userData?.projects?.filter(project => {
+    const cleanText = (text) => {
+      if (!text) return '';
+      return text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]\s*$/, '').toLowerCase();
+    };
+
+    const cleanSearchTerm = cleanText(searchTerm);
+    const cleanTitle = cleanText(project.title);
+    const cleanDescription = cleanText(project.description);
+
+    return cleanTitle.includes(cleanSearchTerm) || 
+           cleanDescription.includes(cleanSearchTerm);
+  });
+
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = userData?.projects?.slice(indexOfFirstProject, indexOfLastProject);
+  const currentProjects = filteredProjects?.slice(indexOfFirstProject, indexOfLastProject);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -141,25 +208,25 @@ const  Profile = () =>  {
               transition={{ duration: 0.5 }}
             >
               <Card className="p-6 border-0 shadow-lg rounded-2xl bg-gradient-to-r from-green-50 to-purple-50">
-              <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Typography
-        variant="h4"
-        className="text-gray-900 mb-6 font-serif"
-      >
-        <Typewriter
-          words={["Profile Information"]}
-          loop={false}
-          cursor
-          cursorStyle="_"
-          typeSpeed={100}
-          deleteSpeed={50}
-        />
-      </Typography>
-    </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Typography
+                    variant="h4"
+                    className="text-gray-900 mb-6 font-serif"
+                  >
+                    <Typewriter
+                      words={["Profile Information"]}
+                      loop={false}
+                      cursor
+                      cursorStyle="_"
+                      typeSpeed={100}
+                      deleteSpeed={50}
+                    />
+                  </Typography>
+                </motion.div>
                 <ProfileInfoCard
                   description="about me"
                   details={{
@@ -175,10 +242,42 @@ const  Profile = () =>  {
                 />
               </Card>
               <div className="col-span-2">
-                <Typography variant="h4" className="text-gray-900 mb-6">
-                  Projects
-                </Typography>
-                {userData?.projects?.length > 0 ? (
+                <div className="flex justify-between items-center mb-6">
+                  <Typography variant="h4" className="text-gray-900">
+                    Projects
+                  </Typography>
+                  <div className="flex items-center gap-2">
+                    <div className="w-72 relative">
+                      <Input
+                        label="Search projects..."
+                        icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                      />
+                      {isListening && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+                          <Typography className="text-purple-600 animate-pulse">
+                            Listening...
+                          </Typography>
+                        </div>
+                      )}
+                    </div>
+                    <Tooltip content="Voice search">
+                      <Button
+                        variant="gradient"
+                        color={isListening ? "red" : "purple"}
+                        onClick={toggleListen}
+                        className="p-2"
+                      >
+                        <MicrophoneIcon className="h-5 w-5" />
+                      </Button>
+                    </Tooltip>
+                  </div>
+                </div>
+                {filteredProjects?.length > 0 ? (
                   <>
                     <motion.div
                       className="overflow-x-auto"
@@ -270,7 +369,7 @@ const  Profile = () =>  {
                         variant="outlined"
                         size="sm"
                         onClick={() => paginate(currentPage + 1)}
-                        disabled={indexOfLastProject >= userData?.projects?.length}
+                        disabled={indexOfLastProject >= filteredProjects?.length}
                       >
                         Next
                       </Button>
@@ -278,7 +377,7 @@ const  Profile = () =>  {
                   </>
                 ) : (
                   <Typography variant="h6" className="text-gray-600">
-                    No projects available.
+                    {searchTerm ? "No projects match your search." : "No projects available."}
                   </Typography>
                 )}
               </div>
@@ -290,4 +389,4 @@ const  Profile = () =>  {
   );
 }
 
-export default Profile ;
+export default Profile;
