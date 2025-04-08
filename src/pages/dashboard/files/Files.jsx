@@ -4,6 +4,8 @@ import { Typography, Button, Input } from "@material-tailwind/react";
 import { getFiles, deleteFile } from "../../../api/files";
 import IsLoading from "@/configs/isLoading";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import Swal from "sweetalert2";
+
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -46,6 +48,32 @@ const Files = () => {
     file.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     file.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "green",
+      cancelButtonColor: "red",
+      confirmButtonText: "Yes, delete it!",
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await deleteFile(id);
+        setFiles((prev) => prev.filter((file) => file._id !== id));
+        Swal.fire("Deleted!", "Your file has been deleted.", "success", {
+          confirmButtonColor: "green",
+        });
+      } catch (error) {
+        console.error("Error deleting file:", error);
+        Swal.fire("Error", "There was a problem deleting the file.", "error");
+      }
+    }
+  };
+  
 
   return (
     <>
@@ -101,7 +129,8 @@ const Files = () => {
                     <td className="px-6 py-4 flex space-x-2">
                       <Button color="blue" onClick={() => navigate(`/dashboard/files/${file._id}`)}>View</Button>
                       <Button color="purple" onClick={() => navigate(`/dashboard/files/edit/${file._id}`, { state: { file } })}>Edit</Button>
-                      <Button color="red" onClick={() => handleDeleteClick(file._id)}>Delete</Button>
+                      <Button color="red" onClick={() => handleDelete(file._id)}>Delete</Button>
+
                     </td>
                   </tr>
                 ))}

@@ -40,6 +40,7 @@ const UpdateProject = ({ onUpdateSuccess }) => {
       Swal.fire({
         title: "Success!",
         text: "Project updated successfully.",
+        confirmButtonColor: "green",
         icon: "success",
       });
       onUpdateSuccess(); 
@@ -48,6 +49,7 @@ const UpdateProject = ({ onUpdateSuccess }) => {
       Swal.fire({
         title: "Error!",
         text: "Failed to update project. Please try again.",
+        confirmButtonColor: "red",
         icon: "error",
       });
     } finally {

@@ -25,6 +25,7 @@ const AddProject = () => {
       Swal.fire({
         title: "Good job!",
         text: newProject.message,
+        confirmButtonColor: "green",
         icon: "success",
       });
       setFormData({

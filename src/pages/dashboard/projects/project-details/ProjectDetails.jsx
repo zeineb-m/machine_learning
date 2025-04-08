@@ -39,6 +39,8 @@ const ProjectDetails = () => {
       text: "This action will permanently delete the project!",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonColor: "green",
+      cancelButtonColor: "red",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
     });

@@ -289,84 +289,85 @@ const Profile = () => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <table className="w-full min-w-[600px] table-auto">
-                        <thead>
-                          <tr className="bg-gradient-to-r from-green-500 to-purple-600 text-white">
-                            <th className="px-6 py-3 text-left">Project Name</th>
-                            <th className="px-6 py-3 text-left">Status</th>
-                            <th className="px-6 py-3 text-left">Start Date</th>
-                            <th className="px-6 py-3 text-left">Description</th>
-                            <th className="px-6 py-3 text-left">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {currentProjects?.map((project, index) => (
-                            <tr
-                              key={index}
-                              className={`${
-                                index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                              } hover:bg-gray-100 transition-colors duration-200`}
-                            >
-                              <td className="px-6 py-4">{project?.title}</td>
-                              <td className="px-6 py-4">
-                                <span
-                                  className={`px-2 py-1 rounded-full text-sm ${
-                                    project?.status === "Completed"
-                                      ? "bg-green-100 text-green-800"
-                                      : project?.status === "In Progress"
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-red-100 text-red-800"
-                                  }`}
-                                >
-                                  {project?.status}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4">
-                                {new Date(project?.startDate).toISOString().slice(0, 10)}
-                              </td>
-                              <td className="px-6 py-4">{project?.description}</td>
-                              <td className="px-6 py-4">
-                                <Button
-                                  variant="gradient"
-                                  size="sm"
-                                  color="green"
-                                  className="shadow-md hover:shadow-green-500/40"
-                                  onClick={() => handleDetails(project._id)}
-                                >
-                                  View
-                                </Button>
-                                <Button
-                                  variant="gradient"
-                                  size="sm"
-                                  color="purple"
-                                  className="shadow-md hover:shadow-purple-600/40 ml-2"
-                                  onClick={() => handleAddFile(project._id)}
-                                >
-                                  Add File
-                                </Button>
-                                <Button
-                                  variant="gradient"
-                                  size="sm"
-                                  color="blue"
-                                  className="shadow-md hover:shadow-blue-500/40 ml-2"
-                                  onClick={() => handleBilan(project._id)}
-                                >
-                                  Bilan
-                                </Button>
-                                <Button
-                                variant="gradient"
-                                size="sm"
-                                color="orange"
-                                className="shadow-md hover:shadow-orange-500/40 ml-2"
-                                onClick={() => handleGrandLivre(project._id)}
-                              >
-                                Grand Livre
-                              </Button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+
+  <table className="w-full min-w-[800px] table-auto border-collapse">
+    <thead>
+      <tr className="bg-gradient-to-r from-green-500 to-purple-600 text-white">
+        <th className="px-4 py-3 text-left whitespace-nowrap">Project Name</th>
+        <th className="px-4 py-3 text-left whitespace-nowrap">Status</th>
+        <th className="px-4 py-3 text-left whitespace-nowrap">Start Date</th>
+        <th className="px-4 py-3 text-left whitespace-nowrap">Description</th>
+        <th className="px-4 py-3 text-left whitespace-nowrap">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentProjects?.map((project, index) => (
+        <tr
+          key={index}
+          className={`${
+            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+          } hover:bg-gray-100 transition-colors duration-200`}
+        >
+          <td className="px-4 py-4 whitespace-nowrap">{project?.title}</td>
+          <td className="px-4 py-4">
+            <span
+              className={`px-2 py-1 rounded-full text-sm whitespace-nowrap ${
+                project?.status === "Completed"
+                  ? "bg-green-100 text-green-800"
+                  : project?.status === "In Progress"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
+              {project?.status}
+            </span>
+          </td>
+          <td className="px-4 py-4 whitespace-nowrap">
+            {new Date(project?.startDate).toISOString().slice(0, 10)}
+          </td>
+          <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{project?.description}</td>
+          <td className="px-4 py-4 flex flex-wrap gap-2">
+            <Button
+              variant="gradient"
+              size="sm"
+              color="green"
+              className="shadow-md hover:shadow-green-500/40"
+              onClick={() => handleDetails(project._id)}
+            >
+              View
+            </Button>
+            <Button
+              variant="gradient"
+              size="sm"
+              color="purple"
+              className="shadow-md hover:shadow-purple-600/40"
+              onClick={() => handleAddFile(project._id)}
+            >
+              Add File
+            </Button>
+            <Button
+              variant="gradient"
+              size="sm"
+              color="blue"
+              className="shadow-md hover:shadow-blue-500/40"
+              onClick={() => handleBilan(project._id)}
+            >
+              Bilan
+            </Button>
+            <Button
+              variant="gradient"
+              size="sm"
+              color="orange"
+              className="shadow-md hover:shadow-orange-500/40"
+              onClick={() => handleGrandLivre(project._id)}
+            >
+              Grand Livre
+            </Button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
                     </motion.div>
                     {/* Pagination */}
                     <div className="flex justify-between mt-4">
