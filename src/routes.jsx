@@ -22,6 +22,7 @@ const FileView = lazy(() => import("./pages/dashboard/files/FileView"));
 const AddFile = lazy(() => import("./pages/dashboard/files/AddFile"));
 const Bilan = lazy(() => import("./pages/dashboard/files/Bilan"));
 const Files = lazy(() => import('./pages/dashboard/files/Files'));
+const GrandLivre = lazy(() => import("./pages/dashboard/files/GrandLivre"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -153,6 +154,16 @@ export const hiddenRoutes = [
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <Bilan />
+        </motion.div>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/grand-livre/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <GrandLivre />
         </motion.div>
       </Suspense>
     ),

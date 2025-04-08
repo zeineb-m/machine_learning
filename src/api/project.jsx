@@ -26,3 +26,35 @@ export const deleteProject = async (idUser , idProject) => {
   const res = await axios.delete(`${URL}/project/${idUser}/${idProject}`) ;
   return res ;
 }
+
+export const getGrandLivre = async (projectId) => {
+  try {
+    console.log("Fetching Grand Livre for project", projectId);
+    const res = await axios.get(`${URL}/grandLivre/read-csv/${projectId}`);
+
+    
+    if (!res.data) {
+      console.error("Invalid response format:", res.data);
+      return [];
+    }
+
+    
+    if (Array.isArray(res.data)) {
+      console.log("Data returned successfully:", res.data.length, "entries");
+      return res.data.map(entry => ({
+        "Numero de compte": entry["Numero de compte"] || "",
+        "Categorie": entry["Categorie"] || "",
+        "Designation": entry["Designation"] || "",
+        "Debit": entry["Debit"] || "0",
+        "Credit": entry["Credit"] || "0",
+        "Total": entry["Total"] || "0"
+      }));
+    } else {
+      console.error("Response is not an array:", res.data);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching Grand Livre:", error);
+    return []; 
+  }
+};

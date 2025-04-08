@@ -24,7 +24,7 @@ const Profile = () => {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
 
-  // Initialize speech recognition
+
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
@@ -78,6 +78,10 @@ const Profile = () => {
     history("/dashboard/files/add", { state: { projectId } });
   };
 
+  const handleGrandLivre = (projectId) => {
+    history(`/dashboard/grand-livre/${projectId}`);
+  };
+
   const toggleEdit = () => setUpdateUser(!updateUser);
 
   useEffect(() => {
@@ -110,7 +114,7 @@ const Profile = () => {
     history(`/dashboard/project-details/${id}`);
   };
 
-  // Filter projects with punctuation removal
+  
   const filteredProjects = userData?.projects?.filter(project => {
     const cleanText = (text) => {
       if (!text) return '';
@@ -349,6 +353,15 @@ const Profile = () => {
                                 >
                                   Bilan
                                 </Button>
+                                <Button
+                                variant="gradient"
+                                size="sm"
+                                color="orange"
+                                className="shadow-md hover:shadow-orange-500/40 ml-2"
+                                onClick={() => handleGrandLivre(project._id)}
+                              >
+                                Grand Livre
+                              </Button>
                               </td>
                             </tr>
                           ))}
