@@ -25,6 +25,9 @@ const Profile = () => {
   const recognitionRef = useRef(null);
 
 
+  console.log("User Data:", userData);
+
+
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     

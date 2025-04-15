@@ -1,15 +1,24 @@
 import React from "react";
-import { Trash2 } from "lucide-react";
+import { FileEdit , Trash2 } from "lucide-react";
 
-const ProjectCards = ({ title, description, startDate, status, onDelete }) => {
+
+const ProjectCards = ({ title, description, startDate, status, onDelete , onUpdate}) => {
   return (
     <div className="bg-white shadow-lg rounded-2xl p-6 max-w-lg mx-auto border border-gray-200 transition-all duration-300 relative">
+      <div className="flex absolute top-3 right-3">
       <button
         onClick={onDelete} 
-        className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition"
+        className=" text-gray-400 hover:text-red-500 transition"
       >
         <Trash2 size={20} />
       </button>
+      <button
+        onClick={onUpdate} 
+        className=" text-gray-400 hover:text-green-500 transition"
+      >
+        <FileEdit  size={20} />
+      </button>
+      </div>
       <h2 className="text-2xl font-bold text-gray-900 mb-3">{title}</h2>
       <p className="text-gray-700 mb-5 leading-relaxed">{description}</p>
       <div className="flex justify-between items-center text-sm text-gray-600">

@@ -1,20 +1,23 @@
 import React, { useEffect, useState, useContext } from "react";
 import ProjectCards from "./card/ProjectCards";
 import { getProjectById, deleteProject } from "@/api/project";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import IsLoading from "@/configs/isLoading";
 import UpdateProject from "../UpdateProject";
 import { AuthContext } from "@/context/AuthContext";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 const ProjectDetails = () => {
   const { getCurrentUser } = useContext(AuthContext);
   const user = getCurrentUser();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
   const [update, setUpdate] = useState(false);
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const updated = searchParams.get("updated") === "true"; // ✅ Corrected
 
   const fetchData = async () => {
     try {
@@ -27,7 +30,10 @@ const ProjectDetails = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+    if (updated) {
+      setUpdate(true);
+    }
+  }, [id, updated]);
 
   if (!project) {
     return <IsLoading />;
@@ -49,8 +55,7 @@ const ProjectDetails = () => {
       try {
         await deleteProject(user.id, project._id);
         Swal.fire("Deleted!", "The project has been deleted.", "success");
-        fetchData(); 
-        navigate("/dashboard/profile"); 
+        navigate("/dashboard/profile");
       } catch (error) {
         console.error("Error deleting project:", error);
         Swal.fire("Error", "There was an error deleting the project.", "error");
@@ -74,7 +79,8 @@ const ProjectDetails = () => {
           description={project?.description}
           startDate={project?.startDate ? new Date(project.startDate).toLocaleDateString() : ""}
           status={project?.status}
-          onDelete={handleDelete} 
+          onDelete={handleDelete}
+          onUpdate={() => setUpdate(true)}
         />
       )}
     </>
