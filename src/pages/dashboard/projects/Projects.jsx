@@ -71,7 +71,7 @@ const Projects = () => {
           <h2 className="text-3xl font-bold mb-6 text-gray-800">Your Projects</h2>
           <div className="overflow-x-auto shadow-xl rounded-2xl">
             <table className="min-w-full bg-white rounded-2xl overflow-hidden">
-              <thead className="bg-gradient-to-r from-indigo-100 to-purple-100 text-gray-700">
+              <thead className="bg-gradient-to-r from-green-600 to-purple-600 text-white">
                 <tr>
                   <th className="px-6 py-4 text-left font-semibold">Title</th>
                   <th className="px-6 py-4 text-left font-semibold">Description</th>
