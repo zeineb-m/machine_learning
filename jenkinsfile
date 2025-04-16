@@ -2,79 +2,80 @@ pipeline {
     agent any
 
     environment {
-        registryCredentials = "nexus"
-        registry = "192.168.127.132:8083"
+        IMAGE_NAME = 'ademselmani/projetpi'
+        DOCKER_USERNAME = 'ademselmani'
+        DOCKER_PASSWORD = 'adem94038666'
+        COMPOSE_FILE = 'docker-compose.yml'
+    }
+
+    tools {
+        jdk 'JAVA_HOME'
+        maven 'M2_HOME'
     }
 
     stages {
-        stage('Install dependencies') {
+
+        stage('Checkout Code') {
             steps {
-                sh 'npm install'
+                git branch: 'ademselmani-4Twin1-G6', url: 'https://github.com/ademselmani/4TWIN1-G6-Sukunami.git'
             }
         }
 
-        stage('Unit Test') {
+        stage('Compile') {
             steps {
-                sh 'npm test'
+                sh 'mvn clean compile'
             }
         }
 
-        stage('SonarQube Analysis') {
+        
+        stage('Run Unit Tests') {
             steps {
-                script {
-                    def scannerHome = tool 'scanner'  // The name you gave in Jenkins config
-                    withSonarQubeEnv() {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
+                sh 'mvn test'
             }
         }
 
-        stage('Build application') {
+
+        stage('Package JAR') {
             steps {
-                sh 'npm run build-dev'
+                sh 'mvn package -DskipTests'
             }
         }
 
-        // Construction des images Docker
-        stage('Building images (node and mongo)') {
+        stage('MVN SONARQUBE') {
             steps {
-                script {
-                    sh 'docker-compose build'
-                }
+                sh "mvn sonar:sonar -Dsonar.login=squ_a546fefc5f50e9f80714f82c88e69e723519390a -Dmaven.test.skip=true"
             }
         }
 
-        // Déploiement des images sur Nexus
         stage('Deploy to Nexus') {
             steps {
-                script {
-                    docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh "docker push ${registry}/nodemongoapp:6.0"
-                    }
-                }
+                sh 'mvn deploy -Dmaven.test.skip=true'
             }
         }
 
-        // Lancer l'application après avoir récupéré l'image depuis Nexus
-        stage('Run application') {
+        stage('Build Docker Image') {
             steps {
-                script {
-                    docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh "docker pull ${registry}/nodemongoapp:6.0"
-                        sh 'docker-compose up -d'
-                    }
-                }
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
-    }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                sh '''
+                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker push $IMAGE_NAME
+                '''
+            }
+        }
+
+       
 
     post {
-        failure {
-            echo 'Build failed! Check the logs for details.'
-        }
         success {
-            echo 'Build completed successfully! 🎉'
+            echo '✅ Build and Deployment successful!'
+        }
+        failure {
+            echo '❌ Build or Deployment failed!'
         }
     }
 }
