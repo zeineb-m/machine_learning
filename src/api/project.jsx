@@ -58,3 +58,12 @@ export const getGrandLivre = async (projectId) => {
     return []; 
   }
 };
+
+export const saveGrandLivreToDB = async (data) => {
+  try {
+    const res = await axios.post(`${URL}/grandLivre/save`, data);   return res.data;
+  } catch (error) {
+    console.error("Error saving Grand Livre:", error);
+    throw error;
+  }
+};

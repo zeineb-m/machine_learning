@@ -46,7 +46,7 @@ export function EditProfile({ onBack }) {
     if (currentUser?.id) {
       fetchUserData();
     }
-  }, [currentUser]);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +55,28 @@ export function EditProfile({ onBack }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Validate age >= 18
+    const birthDateObj = new Date(userData.birthDate);
+    const today = new Date();
+    const age = today.getFullYear() - birthDateObj.getFullYear();
+    const hasBirthdayPassed =
+      today.getMonth() > birthDateObj.getMonth() ||
+      (today.getMonth() === birthDateObj.getMonth() && today.getDate() >= birthDateObj.getDate());
+    const actualAge = hasBirthdayPassed ? age : age - 1;
+  
+    if (actualAge < 18) {
+      Swal.fire("Error", "You must be at least 18 years old.", "error");
+      return;
+    }
+  
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      Swal.fire("Error", "Please enter a valid email address.", "error");
+      return;
+    }
+  
     try {
       await updateUser(currentUser.id, userData);
       Swal.fire("Success", "Profile updated successfully!", "success");
@@ -63,6 +85,7 @@ export function EditProfile({ onBack }) {
       Swal.fire("Error", "Failed to update profile.", "error");
     }
   };
+  
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -84,73 +107,103 @@ export function EditProfile({ onBack }) {
     }
   };
 
+  // Calculate max birth date (must be 18+)
+  const today = new Date();
+  const maxBirthDate = new Date(today.setFullYear(today.getFullYear() - 18)).toISOString().slice(0, 10);
+
   return (
     <>
-    {loading && <IsLoading />}
-    <Card className="mx-auto mt-8 mb-6 w-full max-w-2xl border border-gray-200 shadow-lg">
-      <CardBody className="p-6">
-        <Typography
-      variant="h6"
-      color="green-gray"
-      className="mb-6 cursor-pointer color-green-600 hover:underline transition duration-300"
-      onClick={onBack}
-    >
-      Back to my profile
-    </Typography>
-
-        {/* Tabs */}
-        <div className="flex justify-between mb-6">
-          <Button
-            onClick={() => setActiveTab("profile")}
-            className={`w-1/2 py-2 text-lg rounded-none ${
-              activeTab === "profile" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"
-            }`}
+      {loading && <IsLoading />}
+      <Card className="mx-auto mt-8 mb-6 w-full max-w-2xl border border-gray-200 shadow-lg">
+        <CardBody className="p-6">
+          <Typography
+            variant="h6"
+            color="green-gray"
+            className="mb-6 cursor-pointer color-green-600 hover:underline transition duration-300"
+            onClick={onBack}
           >
-            Edit Profile
-          </Button>
-          <Button
-            onClick={() => setActiveTab("password")}
-            className={`w-1/2 py-2 text-lg rounded-none ${
-              activeTab === "password" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            Change Password
-          </Button>
-        </div>
+            Back to my profile
+          </Typography>
 
-        {/* Profile Form */}
-        {activeTab === "profile" ? (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <Typography variant="h4" color="blue-gray">
+          {/* Tabs */}
+          <div className="flex justify-between mb-6">
+            <Button
+              onClick={() => setActiveTab("profile")}
+              className={`w-1/2 py-2 text-lg rounded-none ${
+                activeTab === "profile" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"
+              }`}
+            >
               Edit Profile
-            </Typography>
-            <Input label="First Name" name="firstName" value={userData.firstName} onChange={handleInputChange} required />
-            <Input label="Last Name" name="lastName" value={userData.lastName} onChange={handleInputChange} required />
-            <Input label="Gender" name="gender" value={userData.gender} onChange={handleInputChange} />
-            <Input type="date" label="Birth Date" name="birthDate" value={userData.birthDate} onChange={handleInputChange} required />
-            <Input label="Phone" name="phone" value={userData.phone} onChange={handleInputChange} required />
-            <Input label="Email" name="email" value={userData.email} onChange={handleInputChange} required />
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
-              Save Changes
             </Button>
-          </form>
-        ) : (
-          // Password Form
-          <form onSubmit={handlePasswordChange} className="space-y-5">
-            <Typography variant="h4" color="blue-gray">
+            <Button
+              onClick={() => setActiveTab("password")}
+              className={`w-1/2 py-2 text-lg rounded-none ${
+                activeTab === "password" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"
+              }`}
+            >
               Change Password
-            </Typography>
-            <Input type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
-            <Input type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-            <Input type="password" label="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-            {error && <Typography color="red">{error}</Typography>}
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
-              Update Password
             </Button>
-          </form>
-        )}
-      </CardBody>
-    </Card>
+          </div>
+
+          {/* Profile Form */}
+          {activeTab === "profile" ? (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Typography variant="h4" color="blue-gray">
+                Edit Profile
+              </Typography>
+              <Input label="First Name" name="firstName" value={userData.firstName} onChange={handleInputChange} required />
+              <Input label="Last Name" name="lastName" value={userData.lastName} onChange={handleInputChange} required />
+              <Input label="Gender" name="gender" value={userData.gender} onChange={handleInputChange} />
+              <Input
+                type="date"
+                label="Birth Date"
+                name="birthDate"
+                value={userData.birthDate}
+                onChange={handleInputChange}
+                required
+                max={maxBirthDate}
+              />
+              <Input label="Phone" name="phone" value={userData.phone} onChange={handleInputChange} required />
+              <Input label="Email" name="email" value={userData.email} onChange={handleInputChange} required />
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
+                Save Changes
+              </Button>
+            </form>
+          ) : (
+            // Password Form
+            <form onSubmit={handlePasswordChange} className="space-y-5">
+              <Typography variant="h4" color="blue-gray">
+                Change Password
+              </Typography>
+              <Input
+                type="password"
+                label="Current Password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+              />
+              <Input
+                type="password"
+                label="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <Input
+                type="password"
+                label="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              {error && <Typography color="red">{error}</Typography>}
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
+                Update Password
+              </Button>
+            </form>
+          )}
+        </CardBody>
+      </Card>
     </>
   );
 }
