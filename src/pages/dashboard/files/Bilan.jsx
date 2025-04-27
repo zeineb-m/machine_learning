@@ -3,39 +3,192 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import './Bilan.css';
 import IsLoading from '@/configs/isLoading';
+import Swal from 'sweetalert2';
 
 function Bilan() {
   const { projectId } = useParams();
   const [bilan, setBilan] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showError, setShowError] = useState(false);
+  const [error, setError] = useState({ message: '', show: false });
+  const [alertMessage, setAlertMessage] = useState(''); // alertMessage for SweetAlert
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (projectId) {
-      fetchBilan(projectId);
+      checkIfBilanExists(projectId);
     } else {
-      setError("Project ID is required.");
+      handleError("Project ID is required.");
       setLoading(false);
     }
   }, [projectId]);
-  const fetchBilan = async (projectId) => {
+
+  /****** Export Excel */
+  const exportToExcel = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/python/generate-bilan?project_id=${projectId}`);
-      console.log(response.data); // Ajouter cette ligne pour inspecter la réponse
-      setBilan(response.data);
-      setShowError(!response.data || (!response.data.ACTIF && !response.data.PASSIF)); 
-      setLoading(false);
-    } catch (err) {
-      console.error(err); // Ajouter cette ligne pour inspecter l'erreur
-      setError(err.response ? err.response.data : 'Failed to load bilan');
-      setShowError(true);
+      setLoading(true);
+      const response = await axios.get(
+        `http://localhost:3001/python/export-bilan-excel/${projectId}`,
+        {
+          responseType: 'blob',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+          },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `bilan_${projectId}_${new Date().toISOString().split('T')[0]}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Succès!',
+        text: 'Export Excel réussi!',
+      });
+    } catch (error) {
+      handleError(error.response?.data?.error || "Erreur lors de l'export Excel");
+    } finally {
       setLoading(false);
     }
   };
-  
+
+  /****** Check if Bilan exists */
+  const checkIfBilanExists = async (projectId) => {
+    if (!projectId) {
+      handleError("Le projectId est manquant");
+      return;
+    }
+
+    const url = `http://localhost:3001/python/bilan/${projectId}`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.exists) {
+        setBilan(response.data.bilanData);
+        setLoading(false);
+      } else {
+        Swal.fire({
+          icon: 'info',
+          title: 'Aucun bilan trouvé',
+          text: 'Aucun bilan n\'a été trouvé pour ce projet, un bilan sera généré.',
+        });
+        setLoading(false);
+        fetchBilan();
+      }
+    } catch (err) {
+      handleError('Échec de la vérification de l\'existence du bilan');
+      setLoading(false);
+    }
+  };
+
+  /****** Fetch Bilan */
+  const fetchBilan = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/python/generate-bilan?project_id=${projectId}`);
+      setBilan(response.data);
+      setLoading(false);
+      saveBilan(response.data);
+    } catch (err) {
+      // handleError('Échec du chargement du bilan');
+      setLoading(false);
+    }
+  };
+
+  /****** Save Bilan */
+  const saveBilan = async (generatedBilan) => {
+    
+      const response = await axios.post('http://localhost:3001/python/save-bilan', {
+        projectId: projectId,
+        bilanData: generatedBilan,
+      });
+      setAlertMessage('Bilan enregistré avec succès.');
+      Swal.fire({
+        icon: 'success',
+        title: 'Succès!',
+        text: 'Bilan enregistré avec succès.',
+      });
+    
+  };
+
+  /****** Handle Error Alerts */
+  const handleError = (message) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: message,
+    });
+  };
+
+  /****** Format Values */
   const formatValue = (value) => {
     return isNaN(value) || value === null ? '0.000' : value.toFixed(3);
+  };
+
+  /****** Render Table Section */
+  const renderTableSection = (sectionData, title) => {
+    const renderNestedData = (data, parentCategory = null, isTotalSection = false) => {
+      return Object.entries(data).map(([subcategory, items]) => {
+        if (parentCategory === subcategory) {
+          return null;
+        }
+
+        const currentIsTotalSection = subcategory === "TOTAL" || isTotalSection;
+
+        return (
+          <React.Fragment key={parentCategory ? `${parentCategory}-${subcategory}` : subcategory}>
+            {typeof items === 'object' && !Array.isArray(items) ? (
+              <>
+                {subcategory !== "TOTAL" && (
+                  <tr>
+                    <td><strong>{subcategory}</strong></td>
+                    <td></td>
+                  </tr>
+                )}
+                {renderNestedData(items, subcategory, currentIsTotalSection)}
+
+                {subcategory === "TOTAL" && !isTotalSection && (
+                  <tr>
+                    <td><strong>Total</strong></td>
+                    <td>{formatValue(items)}</td>
+                  </tr>
+                )}
+              </>
+            ) : (
+              <tr>
+                <td><strong>{subcategory}</strong></td>
+                <td>{formatValue(items)}</td>
+              </tr>
+            )}
+          </React.Fragment>
+        );
+      });
+    };
+
+    return (
+      <table className="bilan-table">
+        <thead>
+          <tr>
+            <th colSpan="2">{title}</th>
+          </tr>
+          <tr>
+            <th>Catégorie</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {renderNestedData(sectionData)}
+        </tbody>
+      </table>
+    );
   };
 
   if (loading) return <IsLoading />;
@@ -44,172 +197,27 @@ function Bilan() {
     <div>
       <h1>Bilan Comptable</h1>
 
-      {showError && (
-        <>
-          <div className="error-overlay" onClick={() => setShowError(false)}></div>
-          <div className="error-message">
-            <p>Aucun fichier n'a été trouvé pour ce projet.</p>
-            <p>Veuillez ajouter les fichiers nécessaires avant de consulter le bilan.</p>
-            <button onClick={() => setShowError(false)}>Fermer</button>
-          </div>
-        </>
-      )}
+      <div className="bilan-actions">
+        <button
+          onClick={exportToExcel}
+          className="export-excel-btn"
+          disabled={loading || !bilan}
+        >
+          {loading ? (
+            <>
+              <span className="spinner"></span>
+              <span>Génération en cours...</span>
+            </>
+          ) : (
+            'Exporter en Excel'
+          )}
+        </button>
+      </div>
 
-      {!showError && bilan && (
+      {!error.show && bilan && (
         <div className="bilan-container">
-          {/* Affichage de la section ACTIF */}
-          <table className="bilan-table">
-            <thead>
-              <tr>
-                <th colSpan="2">ACTIF</th>
-              </tr>
-              <tr>
-                <th>Catégorie</th>
-                <th>Montant</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bilan.ACTIF && (
-                <>
-                  {/* Actif Immobilisé */}
-                  {bilan.ACTIF['Actif immobilisé'] && (
-                    <>
-                      <tr>
-                        <td colSpan="2" className="category-title"><strong>Actif Immobilisé</strong></td>
-                      </tr>
-                      {Object.entries(bilan.ACTIF['Actif immobilisé']).map(([subcategory, items]) => (
-                        <React.Fragment key={subcategory}>
-                          {subcategory !== "TOTAL" && (
-                            <tr>
-                              <td><strong>{subcategory}</strong></td>
-                              <td></td>
-                            </tr>
-                          )}
-                          {typeof items === 'object' && Object.entries(items).map(([item, value]) => (
-                            <tr key={item}>
-                              <td>{item}</td>
-                              <td>{formatValue(value)}</td>
-                            </tr>
-                          ))}
-                          {subcategory === "TOTAL" && (
-                            <tr>
-                              <td><strong>Total I</strong></td>
-                              <td>{formatValue(items)}</td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Actif Circulant */}
-                  {bilan.ACTIF['Actif circulant'] && (
-                    <>
-                      <tr>
-                        <td colSpan="2" className="category-title"><strong>Actif Circulant</strong></td>
-                      </tr>
-                      {Object.entries(bilan.ACTIF['Actif circulant']).map(([subcategory, items]) => (
-                        <React.Fragment key={subcategory}>
-                          {subcategory !== "TOTAL" && (
-                            <tr>
-                              <td><strong>{subcategory}</strong></td>
-                              <td></td>
-                            </tr>
-                          )}
-                          {typeof items === 'object' && Object.entries(items).map(([item, value]) => (
-                            <tr key={item}>
-                              <td>{item}</td>
-                              <td>{formatValue(value)}</td>
-                            </tr>
-                          ))}
-                          {subcategory === "TOTAL" && (
-                            <tr>
-                              <td><strong>Total II</strong></td>
-                              <td>{formatValue(items)}</td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Total ACTIF */}
-                  <tr>
-                    <td><strong>Total ACTIF</strong></td>
-                    <td>{formatValue(bilan.ACTIF.TOTAL)}</td>
-                  </tr>
-                </>
-              )}
-            </tbody>
-          </table>
-
-          {/* Affichage de la section PASSIF */}
-          <table className="bilan-table">
-            <thead>
-              <tr>
-                <th colSpan="2" className="category-title">PASSIF</th>
-              </tr>
-              <tr>
-                <th>Catégorie</th>
-                <th>Montant</th>
-              </tr>
-            </thead>
-            <tbody>
-            {bilan.PASSIF && (
-  <>
-    {bilan.PASSIF["Capitaux propres"] && (
-      <>
-        <tr key="Capitaux propres">
-        <td colSpan="2" className="category-title"><strong>Capitaux propres</strong></td>
-        </tr>
-        {bilan.PASSIF["Capitaux propres"]["capital social"] && (
-          <tr>
-            <td>capital social</td>
-            <td>{formatValue(bilan.PASSIF["Capitaux propres"]["capital social"])}</td>
-          </tr>
-        )}
-        {bilan.PASSIF["Capitaux propres"]["Reserves"] && (
-          <tr>
-            <td>Reserves</td>
-            <td>{formatValue(bilan.PASSIF["Capitaux propres"]["Reserves"])}</td>
-          </tr>
-        )}
-        {bilan.PASSIF["Capitaux propres"]["TOTAL"] && (
-          <tr>
-            <td><strong>TOTAL</strong></td>
-            <td><strong>{formatValue(bilan.PASSIF["Capitaux propres"]["TOTAL"])}</strong></td>
-          </tr>
-        )}
-      </>
-    )}
-
-    {/* Autres sections de PASSIF */}
-    {Object.entries(bilan.PASSIF).map(([category, items]) => (
-      category !== "Capitaux propres" && category !== "TOTAL" && (
-        <>
-          <tr key={category}>
-            <td colSpan="2"><strong>{category}</strong></td>
-          </tr>
-          {typeof items === "object" && Object.entries(items).map(([item, value]) => (
-            <tr key={item}>
-              <td>{item}</td>
-              <td>{formatValue(value)}</td>
-            </tr>
-          ))}
-        </>
-      )
-    ))}
-
-    {/* Total PASSIF */}
-    <tr>
-      <td><strong>Total PASSIF</strong></td>
-      <td>{formatValue(bilan.PASSIF.TOTAL)}</td>
-    </tr>
-  </>
-)}
-
-            </tbody>
-          </table>
+          {bilan.ACTIF && renderTableSection(bilan.ACTIF, 'ACTIF')}
+          {bilan.PASSIF && renderTableSection(bilan.PASSIF, 'PASSIF')}
         </div>
       )}
     </div>
