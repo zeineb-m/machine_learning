@@ -228,28 +228,32 @@ def generate_bilan(df):
         total_dettes = 0
 
         for index, row in df_dettes.iterrows():
-         designation = row["Designation"]
-         valeur = row["Total"]  # Prendre "Total" pour bien calculer les dettes
+            designation = row["Designation"]
+            valeur = row["Total"]  # Prendre "Total" pour bien calculer les dettes
 
-    # Vérifier que la valeur n'est pas NaN avant de la convertir
-         if pd.notna(valeur):
-          valeur = float(valeur)
-         else:
-          valeur = 0  # Éviter les erreurs avec les NaN
+            # Vérifier si la valeur est un nombre
+            if pd.notna(valeur):
+                try:
+                    valeur = float(valeur)  # Convertir en float
+                except ValueError:
+                    print(f"Valeur non convertible en float: {valeur}")
+                    valeur = 0  # Si une erreur de conversion, mettre à 0
+            else:
+                valeur = 0  # Si la valeur est NaN, la considérer comme 0
 
-    # Vérifier si c'est une dette fournisseur ou autre
-         if "Fournisseurs" in designation:  # Correction ici (vérifier "Fournisseurs" et non "Dettes fournisseurs")
-          if "Fournisseurs" not in dettes_items:
-            dettes_items["Fournisseurs"] = 0
-          dettes_items["Fournisseurs"] += valeur  # Additionner les dettes fournisseurs
-        else:
-         if "Autres dettes" not in dettes_items:
-            dettes_items["Autres dettes"] = 0
-        dettes_items["Autres dettes"] += valeur  # Additionner les autres dettes
+            # Vérifier si c'est une dette fournisseur ou autre
+            if "Fournisseurs" in designation:
+                if "Fournisseurs" not in dettes_items:
+                    dettes_items["Fournisseurs"] = 0
+                dettes_items["Fournisseurs"] += valeur  # Additionner les dettes fournisseurs
+            else:
+                if "Autres dettes" not in dettes_items:
+                    dettes_items["Autres dettes"] = 0
+                dettes_items["Autres dettes"] += valeur  # Additionner les autres dettes
 
-        total_dettes += valeur  # Additionner la valeur au total général
+            total_dettes += valeur  # Additionner la valeur au total général
 
-# Résultats
+        # Résultats
         print("Détails des dettes :", dettes_items)
         print("Total des dettes :", total_dettes)
 
@@ -282,8 +286,7 @@ def generate_bilan(df):
 
     return bilan
 
-from tabulate import tabulate
-
+# Fonction pour afficher le bilan sous forme de tableau
 def display_bilan(bilan):
     """
     Affiche le bilan sous forme de tableau structuré avec des sous-lignes.
@@ -368,8 +371,7 @@ if __name__ == "__main__":
     else:
         logging.error("❌ Erreur de connexion à MongoDB.")
 
-
-# 🔹 Exécuter le serveur Flask
+    # 🔹 Exécuter le serveur Flask
     app = Flask(__name__)
     CORS(app)
 
@@ -391,4 +393,3 @@ if __name__ == "__main__":
             return jsonify({"error": "Erreur de connexion à MongoDB"}), 500
 
     app.run(host='0.0.0.0', port=5000)
-

@@ -1,5 +1,5 @@
 import { User } from "../models/User.js"
-import bcrypt from "bcrypt" ;
+import bcrypt from "bcryptjs" ;
 import zxcvbn from 'zxcvbn';
 import path from 'path'
 import fs from 'fs';
