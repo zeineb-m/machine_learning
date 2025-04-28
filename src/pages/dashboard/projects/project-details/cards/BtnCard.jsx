@@ -1,9 +1,9 @@
 import React  from 'react'
 
-const BtnCard = ({title,click}) => {
+const BtnCard = ({title,click , customColor}) => {
     
   return (
-    <button onClick={click} className='cursor-pointer bg-green-600 p-2 border-none  text-white rounded-3xl'>{title}</button>
+    <button onClick={click} className={`cursor-pointer ${customColor} p-2 border-none  text-white rounded-3xl`}>{title}</button>
   )
 }
 

@@ -39,7 +39,7 @@ const ProjectCards = ({ id , title, description, startDate, status, onDelete , o
         >
           {status}
         </span>
-        <BtnCard title="See Balance General" click={()=> navigate(`/${id}`)} />
+        <BtnCard title="See Balance General" click={()=> navigate(`/${id}`)} customColor='bg-orange-800'/>
       </div>
     </div>
   );
