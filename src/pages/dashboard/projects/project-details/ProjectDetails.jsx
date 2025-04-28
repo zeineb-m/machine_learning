@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import ProjectCards from "./card/ProjectCards";
+import ProjectCards from "./cards/ProjectCards";
 import { getProjectById, deleteProject } from "@/api/project";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import IsLoading from "@/configs/isLoading";
