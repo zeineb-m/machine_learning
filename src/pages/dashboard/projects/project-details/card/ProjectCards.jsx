@@ -1,8 +1,11 @@
 import React from "react";
 import { FileEdit , Trash2 } from "lucide-react";
+import BtnCard from "./BtnCard";
+import { useNavigate } from "react-router-dom";
 
 
-const ProjectCards = ({ title, description, startDate, status, onDelete , onUpdate}) => {
+const ProjectCards = ({ id , title, description, startDate, status, onDelete , onUpdate }) => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white shadow-lg rounded-2xl p-6 max-w-lg mx-auto border border-gray-200 transition-all duration-300 relative">
       <div className="flex absolute top-3 right-3">
@@ -36,6 +39,7 @@ const ProjectCards = ({ title, description, startDate, status, onDelete , onUpda
         >
           {status}
         </span>
+        <BtnCard title="See Balance General" click={()=> navigate(`/${id}`)} />
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ const ProjectDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
 
-  const updated = searchParams.get("updated") === "true"; // ✅ Corrected
+  const updated = searchParams.get("updated") === "true"; 
 
   const fetchData = async () => {
     try {
@@ -75,6 +75,7 @@ const ProjectDetails = () => {
         <UpdateProject onUpdateSuccess={fetchData} />
       ) : (
         <ProjectCards
+          id={project?._id}
           title={project?.title}
           description={project?.description}
           startDate={project?.startDate ? new Date(project.startDate).toLocaleDateString() : ""}
