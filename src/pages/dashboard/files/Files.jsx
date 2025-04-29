@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Button, Input } from "@material-tailwind/react";
-import { getFiles, deleteFile } from "../../../api/files";
+import { getFiles, deleteFile, getUserWithFiles } from "../../../api/files";
 import IsLoading from "@/configs/isLoading";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import Swal from "sweetalert2";
-
+import { AuthContext } from '@/context/AuthContext';
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -16,19 +16,29 @@ const Files = () => {
 
   const { transcript, listening, browserSupportsSpeechRecognition } = useSpeechRecognition();
   const navigate = useNavigate();
+  const { getCurrentUser } = useContext(AuthContext);
+  const currentUser = getCurrentUser();
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const data = await getFiles();
-        setFiles(data);
+        const data = await getUserWithFiles(currentUser.id);
+        console.log("Fetched data:", data); // Vérification de la structure des données
+        if (data && Array.isArray(data.files)) {
+          setFiles(data.files); // On récupère uniquement le tableau de fichiers
+        } else {
+          console.error("Expected 'files' to be an array, but got:", data);
+          setFiles([]); // Si aucun fichier, on assigne un tableau vide
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching files", error);
+        setLoading(false);
       }
     };
+
     fetchFiles();
-  }, []);
+  }, [currentUser.id]);
 
   useEffect(() => {
     if (!browserSupportsSpeechRecognition) {
@@ -44,10 +54,11 @@ const Files = () => {
     SpeechRecognition.startListening({ continuous: false, language: "fr-FR" });
   };
 
-  const filteredFiles = files.filter((file) =>
+  // Filtrer les fichiers uniquement si files est un tableau
+  const filteredFiles = Array.isArray(files) ? files.filter((file) =>
     file.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     file.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) : [];
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -73,7 +84,6 @@ const Files = () => {
       }
     }
   };
-  
 
   return (
     <>
@@ -130,7 +140,6 @@ const Files = () => {
                       <Button color="blue" onClick={() => navigate(`/dashboard/files/${file._id}`)}>View</Button>
                       <Button color="purple" onClick={() => navigate(`/dashboard/files/edit/${file._id}`, { state: { file } })}>Edit</Button>
                       <Button color="red" onClick={() => handleDelete(file._id)}>Delete</Button>
-
                     </td>
                   </tr>
                 ))}
