@@ -193,29 +193,53 @@ def generate_bilan(df):
             
             bilan[category]["TOTAL"] = round(total_category, 3)
 
-        # Calculer le total de l'actif circulant
+             # Initialisation des sous-catégories de l'actif circulant
+        actif_circulant = {}
+        total_actif_circulant = 0.0
+
+        # === 1. Traitement des DIVERS ===
         divers_items = {}
-        total_divers = 0
-        for item, charge in mapping["Divers"].items():
-            # On s'assure que la charge dans "Divers" est bien présente dans la colonne "Charge"
-            df_divers = df[df['Categorie'] == charge]
-            if not df_divers.empty:
-                valeur = df_divers['Total']
-                if not valeur.isna().any():
-                    divers_items[item] = float(valeur.iloc[0])
-                    total_divers += divers_items[item]
-                else:
-                    print(f"Aucune valeur valide pour {charge} dans la colonne 'Valeur unitaire'.")
-            else:
-                print(f"Aucune correspondance trouvée pour {charge} dans la colonne 'Charge'.")
+        total_divers = 0.0
 
-        # Mise à jour de l'actif circulant avec les valeurs des divers
+        for item, categorie_charge in mapping.get("Divers", {}).items():
+            df_item = df[df['Categorie'] == categorie_charge]
+            if df_item.empty:
+                print(f"[INFO] Aucun enregistrement pour '{categorie_charge}' (Divers).")
+                continue
+            valeur_total = df_item['Total'].dropna()
+            if valeur_total.empty:
+                print(f"[INFO] Valeur manquante pour '{categorie_charge}' (Divers).")
+                continue
+            montant = float(valeur_total.iloc[0])
+            divers_items[item] = round(montant, 2)
+            total_divers += montant
+
         if divers_items:
-            bilan["ACTIF"]["Actif circulant"]["Divers"] = divers_items
-            bilan["ACTIF"]["Actif circulant"]["Divers"]["TOTAL"] = round(total_divers, 3)
+            actif_circulant["Divers"] = divers_items
+            actif_circulant["Divers"]["TOTAL"] = round(total_divers, 2)
+            total_actif_circulant += total_divers
 
-        total_actif_circulant = total_divers  # À ce stade, on n'a que des éléments dans "Divers"
-        bilan["ACTIF"]["Actif circulant"]["TOTAL"] = round(total_actif_circulant, 3)
+        # === 2. Traitement des STOCKS ===
+        df_stocks = df[df['Categorie'] == "Stocks"]
+        stocks_items = {}
+        total_stocks = 0.0
+
+        for _, row in df_stocks.iterrows():
+            designation = row['Designation']
+            total = row['Total']
+            if pd.notna(total):
+                montant = float(total)
+                stocks_items[designation] = round(montant, 2)
+                total_stocks += montant
+
+        if stocks_items:
+            actif_circulant["Stocks"] = stocks_items
+            actif_circulant["Stocks"]["TOTAL"] = round(total_stocks, 2)
+            total_actif_circulant += total_stocks
+
+        # Mise à jour dans le bilan
+        bilan["ACTIF"]["Actif circulant"] = actif_circulant
+        bilan["ACTIF"]["Actif circulant"]["TOTAL"] = round(total_actif_circulant, 2)
 
         # Calculer le total de l'actif (actif immobilisé + actif circulant)
         total_actif = bilan["ACTIF"]["Actif immobilisé"]["TOTAL"] + bilan["ACTIF"]["Actif circulant"]["TOTAL"]
