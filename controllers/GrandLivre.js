@@ -58,6 +58,7 @@ export const saveGrandLivreToDB = async (req, res) => {
   
       // Check if GrandLivre already exists for this project
       const existingGrandLivre = await GrandLivre.findOne({ project: projectId });
+
   
       if (existingGrandLivre) {
         return res.status(200).json({

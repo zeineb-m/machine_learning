@@ -13,6 +13,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import axios from 'axios';
 import grandLivreRoutes from "./routes/GrandLivre.js"; 
+import balanceRoutes from "./routes/Balance.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -40,6 +41,7 @@ app.use("/api/users", User);
 app.use("/api/project", Project);
 app.use("/api/files", fileRoutes);
 app.use("/api/grandLivre", grandLivreRoutes);
+app.use("/api/balance", balanceRoutes);
 
 app.use("/python",Python);
 server.listen(PORT, () => {

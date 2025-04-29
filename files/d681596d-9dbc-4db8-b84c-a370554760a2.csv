@@ -1,4 +1,4 @@
-Numero de compte,Categorie,Designation,Nombre,Valeur unitaire,Total,Debit,Credit
+Numero de compte,Charge,Designation,Nombre,Valeur unitaire,Total,Debit,Credit
 2181,Charges,Achats non stockes,2,7145.31,14290.62,969,0
 2181,Charges,Achats de marchandises,7,9516.96,66618.72,915,0
 2181,Charges,Location,10,2842.35,28423.5,3244,0
