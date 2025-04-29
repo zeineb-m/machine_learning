@@ -13,6 +13,7 @@ import {
 import IsLoading from "./configs/isLoading";
 import AddProject from "./pages/dashboard/projects/AddProject";
 import Projects from "./pages/dashboard/projects/Projects";
+import Balance from "./pages/dashboard/balance/Balance";
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
@@ -177,6 +178,16 @@ export const hiddenRoutes = [
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <GrandLivre />
+        </motion.div>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/balance-general/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <Balance />
         </motion.div>
       </Suspense>
     ),
