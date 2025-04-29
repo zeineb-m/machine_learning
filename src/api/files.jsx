@@ -41,3 +41,8 @@ export const deleteFile = async (id) => {
   const res = await axios.delete(`${URL}/files/deletefile/${id}`);
   return res.data;
 };
+
+export const getUserWithFiles = async (id) => {
+  const res = await axios.get(`${URL}/files/get/${id}`);
+  return res.data;
+};

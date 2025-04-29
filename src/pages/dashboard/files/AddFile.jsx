@@ -1,9 +1,12 @@
 import { addFile } from "@/api/files";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-
+import { AuthContext } from '@/context/AuthContext';
 const AddFile = () => {
   const location = useLocation();
+   const { getCurrentUser } = useContext(AuthContext);
+    const currentUser = getCurrentUser();
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -34,6 +37,7 @@ const AddFile = () => {
     }
   
     const formDataToSend = new FormData();
+    formDataToSend.append("user", currentUser.id);
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("project", formData.project);

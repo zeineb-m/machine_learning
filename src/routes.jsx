@@ -14,6 +14,7 @@ import IsLoading from "./configs/isLoading";
 import AddProject from "./pages/dashboard/projects/AddProject";
 import Projects from "./pages/dashboard/projects/Projects";
 
+
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
 const Tables = lazy(() => import("@/pages/dashboard/users/Tables"));
@@ -24,7 +25,7 @@ const AddFile = lazy(() => import("./pages/dashboard/files/AddFile"));
 const Bilan = lazy(() => import("./pages/dashboard/files/Bilan"));
 const Files = lazy(() => import('./pages/dashboard/files/Files'));
 const GrandLivre = lazy(() => import("./pages/dashboard/files/GrandLivre"));
-
+const EvaluationSolvabilite = lazy(() => import("./pages/dashboard/finance/solvabilite"));
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -181,6 +182,17 @@ export const hiddenRoutes = [
       </Suspense>
     ),
   },
+  {
+    path: "/finance/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <EvaluationSolvabilite />
+        </motion.div>
+      </Suspense>
+    ),
+  },
+  
 ];
 
 export default RoutesComponent;
