@@ -39,7 +39,24 @@ const ProjectCards = ({ id , title, description, startDate, status, onDelete , o
         >
           {status}
         </span>
-        <BtnCard title="See Balance General" click={()=> navigate(`/${id}`)} customColor='bg-orange-800'/>
+      </div>
+      
+      <div className="mt-6 flex justify-center space-x-4">
+        <BtnCard 
+          title="See Balance General" 
+          click={() => navigate(`/dashboard/bilan/${id}`)} 
+          customColor="bg-orange-800"
+        />
+        <BtnCard 
+          title="Grand Livre" 
+          click={() => navigate(`/dashboard/grand-livre/${id}`)} 
+          customColor="bg-blue-700"
+        />
+        <BtnCard 
+          title="Budget" 
+          click={() => navigate(`/dashboard/budget/${id}`)} 
+          customColor="bg-green-700"
+        />
       </div>
     </div>
   );
