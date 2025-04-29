@@ -4,6 +4,7 @@ import fs from "fs";
 import csv from "csv-parser";
 import { v4 as uuidv4 } from "uuid";
 import { File } from "../models/File.js";
+import { User } from "../models/User.js";
 
 
 const storage = multer.diskStorage({
@@ -32,6 +33,7 @@ export const uploadCSV = async (req, res) => {
       description: req.body.description,
       url: fileUrl,
       project: req.body.project,
+      user: req.body.user, 
     });
 
     await newFile.save();
@@ -51,6 +53,25 @@ export const getFile = async (req, res) => {
     res.status(200).json(file);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving file", error });
+  }
+};
+
+export const getUserWithFiles = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    // Trouver l'utilisateur
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Récupérer tous les fichiers de cet utilisateur
+    const files = await File.find({ user: userId });
+
+    res.status(200).json({ ...user.toObject(), files });
+  } catch (error) {
+    console.error("Error fetching user with files:", error);
+    res.status(500).json({ message: "Error fetching user with files", error });
   }
 };
 

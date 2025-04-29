@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -60,6 +60,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false, 
   },
+  files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
   
   image: {
     data: Buffer,          

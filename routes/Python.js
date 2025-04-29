@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { exportBilanExcel, generateBilan, getBilan ,saveBilan} from '../controllers/bilan.js';
+import {  exportBilanExcel, generateBilan, getBilan ,saveBilan} from '../controllers/bilan.js';
 
 const router = express.Router();
 router.get('/bilan/:projectId', getBilan);

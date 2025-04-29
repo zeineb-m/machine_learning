@@ -5,7 +5,7 @@ const Bilans = new Schema({
   projectId: {
     type: String, // Project ID associated with the bilan
     required: true,
-    unique: true
+    // unique: true
   },
   bilanData: {
     ACTIF: {
