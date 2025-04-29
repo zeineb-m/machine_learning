@@ -8,6 +8,7 @@ import {
   TableCellsIcon,
   DocumentTextIcon,
   ClipboardDocumentListIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -26,6 +27,8 @@ const AddFile = lazy(() => import("./pages/dashboard/files/AddFile"));
 const Bilan = lazy(() => import("./pages/dashboard/files/Bilan"));
 const Files = lazy(() => import('./pages/dashboard/files/Files'));
 const GrandLivre = lazy(() => import("./pages/dashboard/files/GrandLivre"));
+const BudgetManagement = lazy(() => import("./pages/dashboard/budget/BudgetManagement"));
+const BudgetVariance = lazy(() => import("./pages/dashboard/budget/BudgetVariance"));
 const EvaluationSolvabilite = lazy(() => import("./pages/dashboard/finance/solvabilite"));
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -101,6 +104,18 @@ export const RoutesComponent = () => {
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
                 <Files />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <ChartBarIcon {...icon} />,
+          name: "Budget Management",
+          path: "/budget-list",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <Projects />
               </motion.div>
             </Suspense>
           ),
@@ -183,6 +198,27 @@ export const hiddenRoutes = [
       </Suspense>
     ),
   },
+  {
+
+    path: "/budget/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <BudgetManagement />
+        </motion.div>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/budget-variance/:projectId/:trimestre/:annee",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <BudgetVariance />
+</motion.div>
+      </Suspense>
+)
+},
   {
 
     path: "/finance/:projectId",
