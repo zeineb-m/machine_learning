@@ -13,6 +13,7 @@ import {
 import IsLoading from "./configs/isLoading";
 import AddProject from "./pages/dashboard/projects/AddProject";
 import Projects from "./pages/dashboard/projects/Projects";
+import Balance from "./pages/dashboard/balance/Balance";
 
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
@@ -183,16 +184,27 @@ export const hiddenRoutes = [
     ),
   },
   {
+
     path: "/finance/:projectId",
     element: (
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <EvaluationSolvabilite />
+  </motion.div>
+      </Suspense>
+)
+}, 
+  {
+    path: "/balance-general/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <Balance />
         </motion.div>
       </Suspense>
     ),
   },
-  
+
 ];
 
 export default RoutesComponent;
