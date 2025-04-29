@@ -142,6 +142,10 @@ const Profile = () => {
     history(`/dashboard/bilan/${projectId}`);
   };
 
+  const handleFinance = (projectId) => {
+    history(`/dashboard/finance/${projectId}`);
+  };
+
   return (
     <>
       {isLoading && <IsLoading />}
@@ -366,6 +370,15 @@ const Profile = () => {
             >
               Grand Livre
             </Button>
+            <Button
+    variant="gradient"
+    size="sm"
+    color="pink"
+    className="shadow-md hover:shadow-pink-400/40"
+    onClick={() => handleFinance(project._id)}
+  >
+    Finance
+  </Button>
           </td>
         </tr>
       ))}

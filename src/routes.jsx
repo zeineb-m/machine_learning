@@ -14,6 +14,8 @@ import {
 import IsLoading from "./configs/isLoading";
 import AddProject from "./pages/dashboard/projects/AddProject";
 import Projects from "./pages/dashboard/projects/Projects";
+import Balance from "./pages/dashboard/balance/Balance";
+
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
@@ -27,7 +29,7 @@ const Files = lazy(() => import('./pages/dashboard/files/Files'));
 const GrandLivre = lazy(() => import("./pages/dashboard/files/GrandLivre"));
 const BudgetManagement = lazy(() => import("./pages/dashboard/budget/BudgetManagement"));
 const BudgetVariance = lazy(() => import("./pages/dashboard/budget/BudgetVariance"));
-
+const EvaluationSolvabilite = lazy(() => import("./pages/dashboard/finance/solvabilite"));
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -197,6 +199,7 @@ export const hiddenRoutes = [
     ),
   },
   {
+
     path: "/budget/:projectId",
     element: (
       <Suspense fallback={<IsLoading />}>
@@ -212,10 +215,32 @@ export const hiddenRoutes = [
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <BudgetVariance />
+</motion.div>
+      </Suspense>
+)
+},
+  {
+
+    path: "/finance/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <EvaluationSolvabilite />
+  </motion.div>
+      </Suspense>
+)
+}, 
+  {
+    path: "/balance-general/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <Balance />
         </motion.div>
       </Suspense>
     ),
   },
+
 ];
 
 export default RoutesComponent;
