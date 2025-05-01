@@ -99,16 +99,10 @@ const BudgetVariance = () => {
   };
 
   const getVarianceColor = (ecart, montantPrevu) => {
-    // Calculate variance percentage
     const percentage = montantPrevu !== 0 ? (ecart / montantPrevu) * 100 : 0;
-    
-    // Favorable variance (under budget) in green
     if (percentage <= -5) return "green";
-    
-    // Neutral variance (within 5% of budget) in blue
     if (percentage > -5 && percentage < 5) return "blue";
     
-    // Unfavorable variance (over budget) in red
     return "red";
   };
 
@@ -231,8 +225,7 @@ const BudgetVariance = () => {
                       {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(budgetVariance.totalPrevu)}
                     </Typography>
                   </CardBody>
-                </Card>
-                
+                </Card>            
                 <Card className="shadow-sm">
                   <CardBody className="p-4">
                     <div className="flex items-center justify-between mb-2">

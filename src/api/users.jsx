@@ -7,13 +7,13 @@ export const getUser = async (id) => {
   return res.data;
 };
 
-// Fonction pour mettre à jour les données de l'utilisateur
+
 export const updateUser = async (id, userData) => {
   const res = await axios.put(`${URL}/users/updateUser/${id}`, userData);
   return res.data;
 };
 
-// Fonction pour changer le mot de passe
+
 export const changePassword = async (userId, currentPassword, newPassword) => {
   try {
     const response = await axios.put(`http://localhost:3001/api/users/changePassword/${userId}`, {
@@ -26,3 +26,5 @@ export const changePassword = async (userId, currentPassword, newPassword) => {
     throw error;
   }
 };
+
+
