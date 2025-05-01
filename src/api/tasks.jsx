@@ -32,9 +32,9 @@ export const updateTask = async (taskId, taskData) => {
     }
 };
 
-export const deleteTask = async (taskId) => {
+export const deleteTask = async (taskId , userId) => {
     try {
-        const response = await axios.delete(`${URL}/${taskId}`);
+        const response = await axios.delete(`${URL}/${taskId}?userId=${userId}`);
         return response.data;
     } catch (error) {
         console.error("Error deleting task:", error);
