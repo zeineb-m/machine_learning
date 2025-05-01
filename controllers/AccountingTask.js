@@ -104,3 +104,25 @@ export const deleteAccountingTask = async (req, res) => {
     res.status(500).json({ message: "Error deleting accounting task", error });
   }
 };
+
+export const getUpcomingTasks = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const today = new Date();
+    const twoDaysLater = new Date(today);
+    twoDaysLater.setDate(twoDaysLater.getDate() + 2);
+
+    const upcomingTasks = await AccountingTask.find({
+      createdBy: userId,
+      dueDate: {
+        $gte: today,
+        $lte: twoDaysLater
+      },
+      isCompleted: false
+    });
+
+    res.status(200).json(upcomingTasks);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching upcoming tasks", error });
+  }
+};

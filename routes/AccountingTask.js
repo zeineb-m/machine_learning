@@ -3,7 +3,8 @@ import {
   createAccountingTask,
   getAccountingTask,
   updateAccountingTask,
-  deleteAccountingTask
+  deleteAccountingTask,
+  getUpcomingTasks
 } from '../controllers/AccountingTask.js';
 
 
@@ -15,5 +16,6 @@ router.post('/', createAccountingTask);
 router.get('/', getAccountingTask);
 router.put('/:taskId', updateAccountingTask);
 router.delete('/:taskId', deleteAccountingTask);
+router.get('/upcoming', getUpcomingTasks);
 
 export default router;
