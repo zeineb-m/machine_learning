@@ -41,3 +41,13 @@ export const deleteTask = async (taskId) => {
         throw error;
     }
 };
+
+export const getUpcomingTasks = async (userId) => {
+    try {
+        const response = await axios.get(`${URL}/upcoming?userId=${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching upcoming tasks:", error);
+        throw error;
+    }
+};
