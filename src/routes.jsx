@@ -9,12 +9,14 @@ import {
   DocumentTextIcon,
   ClipboardDocumentListIcon,
   ChartBarIcon,
+  ClipboardIcon,
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
 import AddProject from "./pages/dashboard/projects/AddProject";
 import Projects from "./pages/dashboard/projects/Projects";
 import Balance from "./pages/dashboard/balance/Balance";
+import MyTasks from "./pages/dashboard/tasks/MyTasks";
 
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
@@ -68,6 +70,18 @@ export const RoutesComponent = () => {
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
                 <Profile />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <ClipboardIcon {...icon} />,
+          name: "My Tasks",
+          path: "/tasks",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <MyTasks />
               </motion.div>
             </Suspense>
           ),
