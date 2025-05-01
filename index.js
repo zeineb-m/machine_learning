@@ -16,6 +16,7 @@ import grandLivreRoutes from "./routes/GrandLivre.js";
 import balanceRoutes from "./routes/Balance.js";
 import Budget from "./routes/Budget.js";
 import BudgetVariance from "./routes/BudgetVariance.js";
+import AccountingRoutes from './routes/AccountingTask.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -46,6 +47,7 @@ app.use("/api/grandLivre", grandLivreRoutes);
 app.use("/api/balance", balanceRoutes);
 app.use("/api/budget", Budget);
 app.use("/api/budget-variance", BudgetVariance);
+app.use("/api/accounting-task", AccountingRoutes);
 
 app.use("/python",Python);
 server.listen(PORT, () => {
