@@ -3,6 +3,7 @@ import { getTasks, createTask, updateTask, deleteTask } from '@/api/tasks';
 import IsLoading from '@/configs/isLoading';
 import { AuthContext } from '@/context/AuthContext';
 import { format, parseISO, isBefore, isToday, isTomorrow, addDays } from 'date-fns';
+import Swal from 'sweetalert2';
 
 const MyTasks = () => {
     const [tasks, setTasks] = useState([]);
@@ -52,6 +53,13 @@ const MyTasks = () => {
                 description: '',
                 dueDate: format(new Date(), 'yyyy-MM-dd')
             });
+            Swal.fire({
+                icon: 'success',
+                title: 'Task Created',
+                text: 'Your task has been created successfully!',
+                confirmButtonText: 'OK' , 
+                confirmButtonColor: 'green',
+            })
             fetchTasks();
         } catch (error) {
             console.error("Error creating task:", error);
@@ -62,19 +70,56 @@ const MyTasks = () => {
         try {
             await updateTask(editingTask._id, editingTask);
             setEditingTask(null);
+            Swal.fire({
+                icon: 'success',
+                title: 'Task Updated',
+                text: 'Your task has been updated successfully!',
+                confirmButtonText: 'OK' ,
+                confirmButtonColor : 'green'
+            })
             fetchTasks();
         } catch (error) {
             console.error("Error updating task:", error);
         }
     };
 
-    const handleDeleteTask = async (taskId) => {
-        if (window.confirm("Are you sure you want to delete this task?")) {
+    const handleDeleteTask = async (taskId, taskTitle , userId) => {
+        const result = await Swal.fire({
+            title: `Delete "${taskTitle}"?`,
+            text: "This action cannot be undone!",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: 'red',
+            cancelButtonColor: 'gray',
+            cancelButtonText: 'Keep',
+            reverseButtons: true
+        });
+    
+        if (result.isConfirmed) {
             try {
-                await deleteTask(taskId);
-                fetchTasks();
+                await deleteTask(taskId , userId);
+                await fetchTasks();
+                await Swal.fire(
+                    'Deleted!',
+                    `"${taskTitle}" was successfully deleted.`,
+                    'success',
+                    {
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: 'green'
+                    }
+                );
             } catch (error) {
                 console.error("Error deleting task:", error);
+                await Swal.fire(
+                    'Failed!',
+                    `Could not delete "${taskTitle}".`,
+                    'error' ,
+                    {
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: 'red'
+                    }
+                );
             }
         }
     };
@@ -282,7 +327,7 @@ const MyTasks = () => {
                                                                 </svg>
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDeleteTask(task._id)}
+                                                                onClick={() => handleDeleteTask(task._id , task.title , user._id)}
                                                                 className="text-gray-500 hover:text-red-500"
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
