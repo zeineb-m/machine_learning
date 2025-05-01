@@ -61,6 +61,8 @@ const userSchema = new mongoose.Schema({
     default: false, 
   },
   files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
+
+  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "AccountingTask" }],
   
   image: {
     data: Buffer,          
