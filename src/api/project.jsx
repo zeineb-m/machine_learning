@@ -2,15 +2,16 @@ import axios from "axios";
 
 export const URL = "http://localhost:3001/api";
 
+
 export const getUserWithProjects = async (id) => {
-    const res = await axios.get(`${URL}/project/${id}`);
-    return res.data;
-  };
+  const res = await axios.get(`${URL}/project/${id}`);
+  return res.data;
+};
 
 export const getProjectById = async (id) => {
-    const res = await axios.get(`${URL}/project/project-details/${id}`);
-    return res.data;
-  }
+  const res = await axios.get(`${URL}/project/project-details/${id}`);
+  return res.data;
+}
 
 export const addNewProject = async (data) => {
   const res = await axios.post(`${URL}/project` , data) ;
@@ -18,8 +19,8 @@ export const addNewProject = async (data) => {
 }
 
 export const updateProject =  async (id , data) => {
-const res = await axios.put(`${URL}/project/${id}` , data);
-return res ;
+  const res = await axios.put(`${URL}/project/${id}` , data);
+  return res ;
 }
 
 export const deleteProject = async (idUser , idProject) => {
@@ -40,20 +41,20 @@ export const removeUserFromProject = async (data) => {
 export const getUsersByProjectId = async (id) => {
   const res = await axios.get(`${URL}/project/users/${id}`) ;
   return res.data ; 
-
+  
 }
 
 export const getGrandLivre = async (projectId) => {
   try {
     console.log("Fetching Grand Livre for project", projectId);
     const res = await axios.get(`${URL}/grandLivre/read-csv/${projectId}`);
-
+    
     
     if (!res.data) {
       console.error("Invalid response format:", res.data);
       return [];
     }
-
+    
     
     if (Array.isArray(res.data)) {
       console.log("Data returned successfully:", res.data.length, "entries");
@@ -80,6 +81,16 @@ export const saveGrandLivreToDB = async (data) => {
     const res = await axios.post(`${URL}/grandLivre/save`, data);   return res.data;
   } catch (error) {
     console.error("Error saving Grand Livre:", error);
+    throw error;
+  }
+};
+
+export const getCashFlowPrediction = async (projectId) => {
+  try {
+    const response = await axios.get(`${URL}/cashflow/predict/${projectId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cash flow prediction:", error);
     throw error;
   }
 };

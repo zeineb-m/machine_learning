@@ -32,6 +32,7 @@ const GrandLivre = lazy(() => import("./pages/dashboard/files/GrandLivre"));
 const BudgetManagement = lazy(() => import("./pages/dashboard/budget/BudgetManagement"));
 const BudgetVariance = lazy(() => import("./pages/dashboard/budget/BudgetVariance"));
 const EvaluationSolvabilite = lazy(() => import("./pages/dashboard/finance/solvabilite"));
+const CashFlowPrediction = lazy(() => import("./pages/dashboard/finance/cashFlowPredection"));
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -254,6 +255,16 @@ export const hiddenRoutes = [
       </Suspense>
     ),
   },
+  {
+    path: "/cashflow/:projectId",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <CashFlowPrediction />
+        </motion.div>
+      </Suspense>
+    ),
+  }
 
 ];
 

@@ -149,8 +149,8 @@ const GrandLivre = () => {
                           <td className="px-4 py-2">{entry.date || "01/01/2024"}</td>
                           <td className="px-4 py-2">{entry.reference || `AC${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`}</td>
                           <td className="px-4 py-2">{entry["Designation"] || ""}</td>
-                          <td className="px-4 py-2 text-right">{parseFloat(entry["Debit"]) > 0 ? formatNumber(entry["Debit"]) : ""}</td>
-                          <td className="px-4 py-2 text-right">{parseFloat(entry["Credit"]) > 0 ? formatNumber(entry["Credit"]) : ""}</td>
+                          <td className="px-4 py-2 text-right">{parseFloat(entry["Debit"]) > 0 ? formatNumber(entry["Debit"]) : "0"}</td>
+                          <td className="px-4 py-2 text-right">{parseFloat(entry["Credit"]) > 0 ? formatNumber(entry["Credit"]) : "0"}</td>
                         </tr>
                       ))}
                       <tr className="border-t border-gray-300">

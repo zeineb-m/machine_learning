@@ -145,7 +145,9 @@ const Profile = () => {
   const handleFinance = (projectId) => {
     history(`/dashboard/finance/${projectId}`);
   };
-
+  const handleCashFlow = (projectId) => {
+    history(`/dashboard/cashflow/${projectId}`);
+  };
   return (
     <>
       {isLoading && <IsLoading />}
@@ -378,6 +380,15 @@ const Profile = () => {
     onClick={() => handleFinance(project._id)}
   >
     Finance
+  </Button>
+  <Button
+    variant="gradient"
+    size="sm"
+    color="cyan"
+    className="shadow-md hover:shadow-cyan-400/40"
+    onClick={() => handleCashFlow(project._id)}
+  >
+    Cash Flow
   </Button>
           </td>
         </tr>
