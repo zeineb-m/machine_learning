@@ -31,4 +31,4 @@ const Bilans = new Schema({
 
 const Bilan = mongoose.model("Bilan", Bilans);
 
-export default Bilan;  // Default export
+export default Bilan;  

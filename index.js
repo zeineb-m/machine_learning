@@ -17,11 +17,13 @@ import balanceRoutes from "./routes/Balance.js";
 import Budget from "./routes/Budget.js";
 import BudgetVariance from "./routes/BudgetVariance.js";
 import AccountingRoutes from './routes/AccountingTask.js';
+import CashFlowRoutes from './routes/CashFlow.js';
 import MessageRoutes from "./routes/Message.js";
 import { Server } from "socket.io";
 import { Message } from './models/Message.js';
 import { User } from './models/User.js';
 import { Project } from './models/Project.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,8 +65,10 @@ app.use("/api/balance", balanceRoutes);
 app.use("/api/budget", Budget);
 app.use("/api/budget-variance", BudgetVariance);
 app.use("/api/accounting-task", AccountingRoutes);
+app.use("/api/cashflow", CashFlowRoutes);
 app.use("/api/messages", MessageRoutes);
 app.use("/python", Python);
+
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
