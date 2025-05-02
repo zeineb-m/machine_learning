@@ -69,6 +69,13 @@ const userSchema = new mongoose.Schema({
     contentType: String,   
   },
 
+  reclamations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Reclamation',
+    }
+  ],
+
   resetPasswordToken: String,
   resetPasswordExpires: Date,
 
