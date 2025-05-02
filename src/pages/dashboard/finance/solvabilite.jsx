@@ -13,8 +13,8 @@ import {
   Legend,
   ArcElement
 } from 'chart.js';
+import MultivariateLinearRegression from 'ml-regression-multivariate-linear';
 
-// Enregistrer les composants nécessaires de Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,6 +30,8 @@ const EvaluationSolvabilite = () => {
   const [ratios, setRatios] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [riskCategory, setRiskCategory] = useState(null); 
 
   useEffect(() => {
     const fetchRatios = async () => {
@@ -50,6 +52,52 @@ const EvaluationSolvabilite = () => {
       setLoading(false);
     }
   }, [projectId]);
+
+  // Données fictives pour l'entraînement du modèle
+  const trainingData = [
+    [0.5, 1.2, 1.1, 0.8],
+    [1.0, 0.8, 0.6, 0.5],
+    [0.3, 1.5, 1.4, 1.2],
+    [1.5, 0.7, 0.5, 0.4],
+    [0.7, 1.0, 0.9, 0.7]
+  ];
+
+  const trainingLabels = [
+    [0.2],
+    [0.7],
+    [0.1],
+    [0.9],
+    [0.4]
+  ];
+
+  useEffect(() => {
+    if (!ratios) return;
+
+    // Créer un modèle de régression multivariée avec les données d'entraînement
+    const model = new MultivariateLinearRegression(trainingData, trainingLabels);
+
+    // Préparer les ratios actuels pour la prédiction
+    const currentRatios = [
+      parseFloat(ratios?.ratioEndettement || 0),
+      parseFloat(ratios?.ratioSolvabilite || 0),
+      parseFloat(ratios?.ratioLiquiditeGenerale || 0),
+      parseFloat(ratios?.ratioAutonomieFinanciere || 0)
+    ];
+
+    // Prédire avec le modèle
+    const predictionResult = model.predict([currentRatios]);
+    const predictedRisk = predictionResult[0][0].toFixed(2);
+    setPrediction(predictedRisk);
+
+    // Classification en fonction du risque prédit
+    if (predictedRisk < 0.4) {
+      setRiskCategory("Risque faible");
+    } else if (predictedRisk >= 0.4 && predictedRisk < 0.7) {
+      setRiskCategory("Risque modéré");
+    } else {
+      setRiskCategory("Risque élevé");
+    }
+  }, [ratios]);
 
   // Données pour les graphiques
   const ratiosData = {
@@ -125,7 +173,6 @@ const EvaluationSolvabilite = () => {
         Analyse Financière - Projet {projectId}
       </Typography>
 
-      {/* Première ligne avec 2 cartes de même taille */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {/* Carte des ratios principaux */}
         <Grid item xs={12} md={6}>
@@ -178,37 +225,57 @@ const EvaluationSolvabilite = () => {
         </Grid>
       </Grid>
 
-    
-
-      {/* Section d'interprétation détaillée - Une carte pleine largeur */}
+      {/* Section d'interprétation détaillée */}
       <Grid item xs={12}>
         <Card elevation={3} sx={{ mb: 3 }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>Recommandations</Typography>
-            {ratios.interpretation.endettementEleve && (
+            {ratios?.interpretation.endettementEleve && (
               <Typography paragraph color="error">
                 ⚠️ L'endettement est élevé. Il serait prudent de réduire le niveau de dette.
               </Typography>
             )}
-            {!ratios.interpretation.solvable && (
+            {!ratios?.interpretation.solvable && (
               <Typography paragraph color="error">
                 ⚠️ La solvabilité est faible. L'entreprise pourrait avoir des difficultés à honorer ses engagements à long terme.
               </Typography>
             )}
-            {ratios.interpretation.liquiditeGeneraleFaible && (
+            {ratios?.interpretation.liquiditeGeneraleFaible && (
               <Typography paragraph color="error">
                 ⚠️ La liquidité générale est faible. L'entreprise pourrait avoir des difficultés à faire face à ses obligations à court terme.
               </Typography>
             )}
-            {ratios.interpretation.autonomieFinanciereFaible && (
+            {ratios?.interpretation.autonomieFinanciereFaible && (
               <Typography paragraph color="error">
                 ⚠️ L'autonomie financière est faible. L'entreprise dépend fortement des financements externes.
               </Typography>
             )}
-            {ratios.interpretation.solvable && !ratios.interpretation.endettementEleve && (
+            {ratios?.interpretation.solvable && !ratios?.interpretation.endettementEleve && (
               <Typography paragraph color="success.main">
                 ✅ La situation financière de l'entreprise est saine.
               </Typography>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Affichage de la prédiction */}
+      <Grid item xs={12}>
+        <Card elevation={3} sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Prédiction de Risque</Typography>
+            {prediction !== null ? (
+              <>
+                <Typography paragraph>
+                  Le modèle prédit un risque global de : <strong>{(prediction * 100)}%</strong>
+
+                </Typography>
+                <Typography paragraph color={riskCategory === 'Risque faible' ? 'success.main' : riskCategory === 'Risque modéré' ? 'warning.main' : 'error'}>
+                  {riskCategory} : {riskCategory === 'Risque faible' ? 'situation financière saine' : riskCategory === 'Risque modéré' ? 'surveillez vos ratios' : 'des actions correctives sont nécessaires'}
+                </Typography>
+              </>
+            ) : (
+              <Typography paragraph>Prédiction en cours...</Typography>
             )}
           </CardContent>
         </Card>

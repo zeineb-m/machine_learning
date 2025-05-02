@@ -10,6 +10,7 @@ import {
   ClipboardDocumentListIcon,
   ChartBarIcon,
   ClipboardIcon,
+  FolderIcon,
   ChatBubbleBottomCenterTextIcon
 } from "@heroicons/react/24/solid";
 
@@ -18,7 +19,9 @@ import AddProject from "./pages/dashboard/projects/AddProject";
 import Projects from "./pages/dashboard/projects/Projects";
 import Balance from "./pages/dashboard/balance/Balance";
 import MyTasks from "./pages/dashboard/tasks/MyTasks";
+import AddUser from "./pages/dashboard/users/adduser";
 import Conversation from "./pages/dashboard/conversation/Conversation";
+
 
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
@@ -103,7 +106,13 @@ export const RoutesComponent = () => {
         user?.role === "admin" && {
           icon: <TableCellsIcon {...icon} />,
           name: "Users",
+          path: "",
+        },
+        {
+          icon: <TableCellsIcon {...icon} />,
+          name: "List Users",
           path: "/tables",
+          parent: "Users",
           element: (
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
@@ -114,12 +123,44 @@ export const RoutesComponent = () => {
         },
         {
           icon: <DocumentTextIcon {...icon} />,
+          name: "Add User",
+          path: "/add-user",
+          parent: "Users",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <AddUser />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <FolderIcon {...icon} />,
           name: "Projects",
+          path: "",
+        },
+        {
+          icon: <DocumentTextIcon {...icon} />,
+          name: "List Projects",
           path: "/projects",
+          parent: "Projects",
           element: (
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
                 <Projects />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <ClipboardDocumentListIcon {...icon} />,
+          name: "Add New Project",
+          path: "/add-project",
+          parent: "Projects",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <AddProject />
               </motion.div>
             </Suspense>
           ),
