@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { getAllUsers } from "@/api/users";
 import { FileEdit, Trash2, Plus, X, Users, Calendar, Info } from "lucide-react";
 
+
 const ProjectDetails = () => {
   const { getCurrentUser } = useContext(AuthContext);
   const user = getCurrentUser();
@@ -167,6 +168,7 @@ const ProjectDetails = () => {
   }
 
   return (
+    <>
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
@@ -330,6 +332,7 @@ const ProjectDetails = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

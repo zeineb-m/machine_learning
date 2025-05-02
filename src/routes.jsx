@@ -11,6 +11,7 @@ import {
   ChartBarIcon,
   ClipboardIcon,
   FolderIcon,
+  ChatBubbleBottomCenterTextIcon
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -19,6 +20,8 @@ import Projects from "./pages/dashboard/projects/Projects";
 import Balance from "./pages/dashboard/balance/Balance";
 import MyTasks from "./pages/dashboard/tasks/MyTasks";
 import AddUser from "./pages/dashboard/users/adduser";
+import Conversation from "./pages/dashboard/conversation/Conversation";
+
 
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
@@ -84,6 +87,18 @@ export const RoutesComponent = () => {
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
                 <MyTasks />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <ChatBubbleBottomCenterTextIcon {...icon} />,
+          name: "conversation",
+          path: "/conversation",
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <Conversation />
               </motion.div>
             </Suspense>
           ),
