@@ -11,7 +11,8 @@ import {
   ChartBarIcon,
   ClipboardIcon,
   FolderIcon,
-  ChatBubbleBottomCenterTextIcon
+  ChatBubbleBottomCenterTextIcon , 
+  ExclamationCircleIcon
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -21,6 +22,8 @@ import Balance from "./pages/dashboard/balance/Balance";
 import MyTasks from "./pages/dashboard/tasks/MyTasks";
 import AddUser from "./pages/dashboard/users/adduser";
 import Conversation from "./pages/dashboard/conversation/Conversation";
+import Claims from "./pages/dashboard/claims/Claims";
+import ClaimsList from "./pages/dashboard/claims/ClaimsList";
 
 
 
@@ -179,29 +182,30 @@ export const RoutesComponent = () => {
           ),
         },
         {
-          icon: <ChartBarIcon {...icon} />,
-          name: "Budget Management",
-          path: "/budget-list",
+          icon: <ExclamationCircleIcon {...icon} />,
+          name: "Claims",
+          path: "/claims",
           element: (
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
-                <Projects />
+                <Claims />
               </motion.div>
             </Suspense>
           ),
-        },
+        } , 
         {
-          icon: <ClipboardDocumentListIcon {...icon} />,
-          name: "Add New Project",
-          path: "/add-project",
+          icon: <ExclamationCircleIcon {...icon} />,
+          name: "All Claims",
+          path: "/all-claims",
           element: (
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
-                <AddProject />
+                <ClaimsList />
               </motion.div>
             </Suspense>
           ),
-        },
+        }
+
       ].filter(Boolean), 
     },
   ];
@@ -224,6 +228,18 @@ export const hiddenRoutes = [
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <AddFile />
+        </motion.div>
+      </Suspense>
+    ),
+  },
+  {
+    icon: <ClipboardDocumentListIcon {...icon} />,
+    name: "Add New Project",
+    path: "/add-project",
+    element: (
+      <Suspense fallback={<IsLoading />}>
+        <motion.div {...fadeInTransition}>
+          <AddProject />
         </motion.div>
       </Suspense>
     ),
