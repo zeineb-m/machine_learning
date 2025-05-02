@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getBalance, addBalance } from '@/api/balance';
+import IsLoading from '@/configs/isLoading';
 
 const Balance = () => {
   const { projectId } = useParams();
@@ -33,10 +34,7 @@ const Balance = () => {
   }, [projectId]);
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      <span className="ml-3 text-gray-600">Loading balance...</span>
-    </div>
+   <IsLoading />
   );
 
   if (error) return (

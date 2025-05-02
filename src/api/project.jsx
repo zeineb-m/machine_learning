@@ -27,6 +27,22 @@ export const deleteProject = async (idUser , idProject) => {
   return res ;
 }
 
+export const addUserToProject = async (data) => {
+  const res = await axios.post(`${URL}/project/add-user` , data) ;
+  return res.data ; 
+}
+
+export const removeUserFromProject = async (data) => {
+  const res = await axios.delete(`${URL}/project/remove-user` , { data }) ;
+  return res.data ;
+}
+
+export const getUsersByProjectId = async (id) => {
+  const res = await axios.get(`${URL}/project/users/${id}`) ;
+  return res.data ; 
+
+}
+
 export const getGrandLivre = async (projectId) => {
   try {
     console.log("Fetching Grand Livre for project", projectId);
