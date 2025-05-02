@@ -17,6 +17,7 @@ import balanceRoutes from "./routes/Balance.js";
 import Budget from "./routes/Budget.js";
 import BudgetVariance from "./routes/BudgetVariance.js";
 import AccountingRoutes from './routes/AccountingTask.js';
+import CashFlowRoutes from './routes/CashFlow.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -48,6 +49,7 @@ app.use("/api/balance", balanceRoutes);
 app.use("/api/budget", Budget);
 app.use("/api/budget-variance", BudgetVariance);
 app.use("/api/accounting-task", AccountingRoutes);
+app.use("/api/cashflow", CashFlowRoutes);
 
 app.use("/python",Python);
 server.listen(PORT, () => {
