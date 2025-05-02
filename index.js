@@ -19,6 +19,7 @@ import BudgetVariance from "./routes/BudgetVariance.js";
 import AccountingRoutes from './routes/AccountingTask.js';
 import CashFlowRoutes from './routes/CashFlow.js';
 import MessageRoutes from "./routes/Message.js";
+import ReclamationRoutes from "./routes/Reclamation.js";
 import { Server } from "socket.io";
 import { Message } from './models/Message.js';
 import { User } from './models/User.js';
@@ -67,6 +68,7 @@ app.use("/api/budget-variance", BudgetVariance);
 app.use("/api/accounting-task", AccountingRoutes);
 app.use("/api/cashflow", CashFlowRoutes);
 app.use("/api/messages", MessageRoutes);
+app.use("/api/claims", ReclamationRoutes);
 app.use("/python", Python);
 
 
