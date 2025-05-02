@@ -18,6 +18,7 @@
     "apexcharts": "3.44.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.9",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.4.10",
     "html2pdf.js": "^0.10.3",
     "lucide-react": "^0.479.0",
@@ -31,6 +32,7 @@
     "react-simple-typewriter": "^5.0.1",
     "react-speech-recognition": "^4.0.0",
     "recharts": "^2.15.3",
+    "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.17.2",
     "yup": "^1.6.1"
   },
