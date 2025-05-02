@@ -30,6 +30,12 @@ const projectSchema = new mongoose.Schema({
       ref: "File",
     },
   ],
+  users : [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ]
 });
 
 export const Project = mongoose.model("Project", projectSchema);

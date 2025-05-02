@@ -83,7 +83,7 @@ export const updateAccountingTask = async (req, res) => {
 export const deleteAccountingTask = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const userId = req.id;
+    const  {userId} = req.query;
 
     const user = await User.findById(userId);
 
