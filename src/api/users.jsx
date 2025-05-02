@@ -7,6 +7,15 @@ export const getUser = async (id) => {
   return res.data;
 };
 
+export const getAllUsers = async () => {
+  const res = await axios.get(`${URL}/users` , {
+    headers: {
+      token: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return res.data;
+}
+
 
 export const updateUser = async (id, userData) => {
   const res = await axios.put(`${URL}/users/updateUser/${id}`, userData);
