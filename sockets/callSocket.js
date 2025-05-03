@@ -25,7 +25,7 @@ export const setupCallSocket = (io) => {
         }
 
         // Verify user is part of the project
-        if (!project.users.includes(userId)) {
+        if (!project.users.includes(userId) && project.user.toString() !== userId) {
           throw new Error("Unauthorized to join call for this project");
         }
 
