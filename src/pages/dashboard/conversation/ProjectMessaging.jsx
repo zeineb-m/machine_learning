@@ -28,6 +28,113 @@ const ProjectMessaging = ({ projectId, senderId }) => {
   const messageSocketRef = useRef(null);
   const callSocketRef = useRef(null);
 
+  // Initialize sockets
+  useEffect(() => {
+    // Message socket
+    messageSocketRef.current = io('http://localhost:3001/messages');
+    messageSocketRef.current.on('connect', () => {
+      console.log('Connected to message socket');
+      messageSocketRef.current.emit('join_project', projectId);
+    });
+    messageSocketRef.current.on('receive_message', (message) => {
+      setMessages(prev => [...prev, message]);
+    });
+
+    // Call socket
+    callSocketRef.current = io('http://localhost:3001/call');
+    callSocketRef.current.on('connect', () => {
+      console.log('Connected to call socket');
+      callSocketRef.current.emit('register_user', senderId);
+      callSocketRef.current.emit('join_call_room', { projectId, userId: senderId });
+    });
+
+    // Call events
+    callSocketRef.current.on('call_received', (data) => {
+      setCallData({
+        ...data,
+        isVideo: data.isVideo,
+        callerId: data.callerId
+      });
+      setIsCaller(false);
+      setIsRinging(true);
+    });
+
+    callSocketRef.current.on('call_accepted', async (data) => {
+      setIsRinging(false);
+      setActiveCall(true);
+      if (isCaller) {
+        try {
+          const offer = await pcRef.current.createOffer();
+          await pcRef.current.setLocalDescription(offer);
+          callSocketRef.current.emit('offer', {
+            projectId,
+            offer,
+            callerId: senderId,
+            calleeId: data.calleeId
+          });
+        } catch (err) {
+          console.error('Error creating offer:', err);
+          endCall();
+        }
+      }
+    });
+
+    callSocketRef.current.on('call_rejected', () => {
+      endCall();
+      alert('Call rejected');
+    });
+
+    callSocketRef.current.on('call_ended', () => {
+      endCall();
+    });
+
+    // WebRTC events
+    callSocketRef.current.on('offer', async (data) => {
+      if (!isCaller) {
+        try {
+          await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.offer));
+          const answer = await pcRef.current.createAnswer();
+          await pcRef.current.setLocalDescription(answer);
+          callSocketRef.current.emit('answer', {
+            projectId,
+            answer,
+            callerId: data.callerId,
+            calleeId: senderId
+          });
+        } catch (err) {
+          console.error('Error handling offer:', err);
+          endCall();
+        }
+      }
+    });
+
+    callSocketRef.current.on('answer', async (data) => {
+      try {
+        await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+      } catch (err) {
+        console.error('Error handling answer:', err);
+        endCall();
+      }
+    });
+
+    callSocketRef.current.on('ice_candidate', (data) => {
+      try {
+        const candidate = new RTCIceCandidate(data.candidate);
+        pcRef.current.addIceCandidate(candidate).catch(e => console.error(e));
+      } catch (err) {
+        console.error('Error adding ICE candidate:', err);
+      }
+    });
+
+    return () => {
+      messageSocketRef.current?.emit('leave_project', projectId);
+      messageSocketRef.current?.disconnect();
+      callSocketRef.current?.emit('leave_call_room', projectId);
+      callSocketRef.current?.disconnect();
+      endCall();
+    };
+  }, [projectId, senderId]);
+
   // Fetch messages
   useEffect(() => {
     const fetchMessages = async () => {
@@ -49,132 +156,67 @@ const ProjectMessaging = ({ projectId, senderId }) => {
     if (senderId) fetchMessages();
   }, [projectId, senderId]);
 
-  // Initialize sockets
-  useEffect(() => {
-    // Message socket
-    messageSocketRef.current = io('http://localhost:3001/messages', {
-      transports: ['websocket'],
-      withCredentials: true
-    });
-    
-    messageSocketRef.current.on('connect', () => {
-      console.log('Connected to message socket');
-      messageSocketRef.current.emit('join_project', projectId);
-    });
-    
-    messageSocketRef.current.on('receive_message', (message) => {
-      setMessages(prev => [...prev, message]);
-    });
-
-    // Call socket
-    callSocketRef.current = io('http://localhost:3001/call', {
-      transports: ['websocket'],
-      withCredentials: true
-    });
-    
-    callSocketRef.current.on('connect', () => {
-      console.log('Connected to call socket');
-      callSocketRef.current.emit('join_call_room', { projectId, userId: senderId });
-    });
-
-    // Call events
-    callSocketRef.current.on('call_received', (data) => {
-      setCallData({
-        ...data,
-        isVideo: data.isVideo,
-        callerId: data.callerId,
-        isActive: true
-      });
-      setIsCaller(false);
-      setIsRinging(true);
-    });
-
-    callSocketRef.current.on('call_accepted', (data) => {
-      setIsRinging(false);
-      setActiveCall(true);
-    });
-
-    callSocketRef.current.on('call_rejected', () => {
-      endCall();
-      alert('Call rejected');
-    });
-
-    callSocketRef.current.on('call_ended', () => {
-      endCall();
-    });
-
-    // WebRTC events
-    callSocketRef.current.on('offer', async (data) => {
-      if (!isCaller && pcRef.current) {
-        try {
-          await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.offer));
-          const answer = await pcRef.current.createAnswer();
-          await pcRef.current.setLocalDescription(answer);
-          
-          callSocketRef.current.emit('answer', {
-            projectId,
-            answer,
-            callerId: data.callerId,
-            calleeId: senderId
-          });
-        } catch (err) {
-          console.error('Error handling offer:', err);
-          endCall();
-        }
-      }
-    });
-
-    callSocketRef.current.on('answer', async (data) => {
-      if (pcRef.current && pcRef.current.signalingState !== 'stable') {
-        try {
-          await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
-        } catch (err) {
-          console.error('Error handling answer:', err);
-          endCall();
-        }
-      }
-    });
-
-    callSocketRef.current.on('ice_candidate', async (data) => {
-      try {
-        if (data.candidate && pcRef.current) {
-          await pcRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
-        }
-      } catch (err) {
-        console.error('Error adding ICE candidate:', err);
-      }
-    });
-
-    return () => {
-      messageSocketRef.current?.emit('leave_project', projectId);
-      messageSocketRef.current?.disconnect();
-      callSocketRef.current?.emit('leave_call_room', projectId);
-      callSocketRef.current?.disconnect();
-      endCall();
-    };
-  }, [projectId, senderId]);
-
   // Scroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Initialize peer connection
-  const createPeerConnection = async (isVideo) => {
+  // Send message
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !senderId) return;
+
     try {
-      const configuration = {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' }
-        ]
-      };
+      const response = await fetch(`http://localhost:3001/api/messages?senderId=${senderId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newMessage, projectId })
+      });
 
-      const pc = new RTCPeerConnection(configuration);
-      pcRef.current = pc;
+      if (!response.ok) throw new Error('Failed to send message');
+      
+      const sentMessage = await response.json();
+      setNewMessage('');
+      messageSocketRef.current.emit('send_message', {
+        content: sentMessage.content,
+        projectId,
+        senderId
+      });
+    } catch (err) {
+      console.error('Error sending message:', err);
+    }
+  };
 
-      // Handle ICE candidates
-      pc.onicecandidate = (event) => {
+  // Call functions
+  const startCall = async (isVideo) => {
+    try {
+      setIsCaller(true);
+      setIsRinging(true);
+      setCallData({
+        isVideo,
+        name: 'Calling...',
+        projectId
+      });
+
+      // Initialize peer connection
+      pcRef.current = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      });
+
+      // Get local stream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: isVideo
+      });
+      setLocalStream(stream);
+
+      // Add tracks to peer connection
+      stream.getTracks().forEach(track => {
+        pcRef.current.addTrack(track, stream);
+      });
+
+      // Set up event handlers
+      pcRef.current.onicecandidate = (event) => {
         if (event.candidate) {
           callSocketRef.current.emit('ice_candidate', {
             projectId,
@@ -184,55 +226,9 @@ const ProjectMessaging = ({ projectId, senderId }) => {
         }
       };
 
-      // Handle remote stream
-      pc.ontrack = (event) => {
-        if (event.streams && event.streams[0]) {
-          setRemoteStream(event.streams[0]);
-        }
+      pcRef.current.ontrack = (event) => {
+        setRemoteStream(event.streams[0]);
       };
-
-      // Get local media
-      const constraints = {
-        audio: true,
-        video: isVideo ? { 
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } : false
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      setLocalStream(stream);
-      setIsVideoOn(isVideo);
-      setIsAudioOn(true);
-
-      // Add tracks to peer connection
-      stream.getTracks().forEach(track => {
-        pc.addTrack(track, stream);
-      });
-
-      return pc;
-    } catch (err) {
-      console.error('Error creating peer connection:', err);
-      throw err;
-    }
-  };
-
-  const startCall = async (isVideo) => {
-    try {
-      setIsCaller(true);
-      setIsRinging(true);
-      
-      // Create peer connection and get media
-      await createPeerConnection(isVideo);
-
-      // Set call data
-      setCallData({
-        isVideo,
-        callerName: 'Calling...',
-        projectId,
-        isActive: true
-      });
 
       // Notify other users
       callSocketRef.current.emit('start_call', {
@@ -240,49 +236,56 @@ const ProjectMessaging = ({ projectId, senderId }) => {
         callerId: senderId,
         isVideo
       });
-
-      // Create offer
-      const pc = pcRef.current;
-      const offer = await pc.createOffer({
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: isVideo
-      });
-      await pc.setLocalDescription(offer);
-
-      // Send offer to callee
-      callSocketRef.current.emit('offer', {
-        projectId,
-        offer,
-        callerId: senderId,
-        calleeId: null // Will be set by server
-      });
-
     } catch (err) {
       console.error('Error starting call:', err);
       endCall();
     }
   };
 
-  const handleAcceptCall = async (isVideo) => {
-    try {
-      setIsRinging(false);
-      setActiveCall(true);
-      
-      // Create peer connection and get media
-      await createPeerConnection(isVideo);
+  const handleAcceptCall = (isVideo) => {
+    setIsRinging(false);
+    setActiveCall(true);
+    
+    // Initialize peer connection
+    pcRef.current = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
 
-      // Notify caller that call was accepted
-      callSocketRef.current.emit('accept_call', {
-        projectId,
-        callerId: callData.callerId,
-        calleeId: senderId,
-        isVideo
+    // Get local stream
+    navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: isVideo
+    }).then(stream => {
+      setLocalStream(stream);
+      stream.getTracks().forEach(track => {
+        pcRef.current.addTrack(track, stream);
       });
-
-    } catch (err) {
-      console.error('Error accepting call:', err);
+    }).catch(err => {
+      console.error('Error getting media:', err);
       endCall();
-    }
+    });
+
+    pcRef.current.onicecandidate = (event) => {
+      if (event.candidate) {
+        callSocketRef.current.emit('ice_candidate', {
+          projectId,
+          candidate: event.candidate,
+          userId: senderId
+        });
+      }
+    };
+
+    pcRef.current.ontrack = (event) => {
+      setRemoteStream(event.streams[0]);
+    };
+
+    // Notify caller
+    callSocketRef.current.emit('accept_call', {
+      projectId,
+      callerId: callData.callerId,
+      calleeId: senderId,
+      isVideo
+    });
   };
 
   const handleRejectCall = () => {
@@ -337,31 +340,6 @@ const ProjectMessaging = ({ projectId, senderId }) => {
     }
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !senderId) return;
-
-    try {
-      const response = await fetch(`http://localhost:3001/api/messages?senderId=${senderId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newMessage, projectId })
-      });
-
-      if (!response.ok) throw new Error('Failed to send message');
-      
-      const sentMessage = await response.json();
-      setNewMessage('');
-      messageSocketRef.current.emit('send_message', {
-        content: sentMessage.content,
-        projectId,
-        senderId
-      });
-    } catch (err) {
-      console.error('Error sending message:', err);
-    }
-  };
-
   return (
     <div className="flex flex-col h-full bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
       {/* Call components */}
@@ -370,6 +348,7 @@ const ProjectMessaging = ({ projectId, senderId }) => {
           callData={callData}
           onAccept={handleAcceptCall}
           onReject={handleRejectCall}
+          onEnd={endCall}
           isCaller={isCaller}
           isRinging={isRinging}
         />

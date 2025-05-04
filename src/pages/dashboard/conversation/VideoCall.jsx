@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { XMarkIcon, PhoneIcon, VideoCameraIcon, MicrophoneIcon } from '@heroicons/react/24/solid';
+import React, { useState, useEffect, useRef } from 'react';
+import { XMarkIcon, PhoneIcon, VideoCameraIcon, MicrophoneIcon, SpeakerWaveIcon } from '@heroicons/react/24/solid';
 
 const VideoCall = ({ 
   callData, 
   onEndCall, 
+  onAcceptCall, 
+  onRejectCall,
   localStream,
   remoteStream,
   isCaller,
@@ -18,13 +20,13 @@ const VideoCall = ({
   const [isMinimized, setIsMinimized] = useState(false);
 
   useEffect(() => {
-    if (localStream && localVideoRef.current && !localVideoRef.current.srcObject) {
+    if (localStream && localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
     }
   }, [localStream]);
 
   useEffect(() => {
-    if (remoteStream && remoteVideoRef.current && !remoteVideoRef.current.srcObject) {
+    if (remoteStream && remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
   }, [remoteStream]);
@@ -60,12 +62,13 @@ const VideoCall = ({
                 ref={remoteVideoRef} 
                 autoPlay 
                 playsInline 
+                muted
                 className="w-full h-full object-cover"
               />
             )}
           </div>
           <div>
-            <p className="text-sm font-medium">{callData.callerName || 'Call in progress'}</p>
+            <p className="text-sm font-medium">{callData.name || 'Call in progress'}</p>
             <p className="text-xs text-gray-500">{formatTime(callDuration)}</p>
           </div>
           <button 
@@ -92,7 +95,7 @@ const VideoCall = ({
       {/* Call header */}
       <div className="bg-black bg-opacity-50 text-white p-4 flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold">{callData.callerName || 'Video Call'}</h2>
+          <h2 className="text-xl font-semibold">{callData.name || 'Video Call'}</h2>
           <p className="text-gray-300">{formatTime(callDuration)}</p>
         </div>
         <div className="flex space-x-4">
@@ -112,8 +115,6 @@ const VideoCall = ({
           </button>
         </div>
       </div>
-
-      {/* Main video area */}
       <div className="flex-1 relative">
         {remoteStream ? (
           <video 
@@ -127,11 +128,11 @@ const VideoCall = ({
             <div className="text-center">
               <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center mx-auto mb-4">
                 <span className="text-4xl text-white">
-                  {callData.callerName ? callData.callerName.charAt(0).toUpperCase() : 'U'}
+                  {callData.name ? callData.name.charAt(0).toUpperCase() : 'U'}
                 </span>
               </div>
-              <p className="text-white text-xl">{callData.callerName || 'Caller'}</p>
-              <p className="text-gray-400">Call in progress</p>
+              <p className="text-white text-xl">{callData.name || 'Caller'}</p>
+              <p className="text-gray-400">{callData.isActive ? 'Call in progress' : 'Connecting...'}</p>
             </div>
           </div>
         )}
@@ -149,7 +150,6 @@ const VideoCall = ({
         )}
       </div>
 
-      {/* Controls */}
       <div className="bg-black bg-opacity-50 p-4 flex justify-center space-x-6">
         <button 
           onClick={toggleVideo}
