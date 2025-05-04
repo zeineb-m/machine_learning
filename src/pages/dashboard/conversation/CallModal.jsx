@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PhoneIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
@@ -6,7 +5,6 @@ const CallModal = ({
   callData, 
   onAccept, 
   onReject, 
-  onEnd,
   isCaller,
   isRinging
 }) => {
@@ -23,7 +21,7 @@ const CallModal = ({
               <PhoneIcon className="h-10 w-10 text-gray-500" />
             )}
           </div>
-          <h2 className="text-2xl font-semibold mb-1">{callData.name || 'Caller'}</h2>
+          <h2 className="text-2xl font-semibold mb-1">{callData.callerName || 'Caller'}</h2>
           <p className="text-gray-600">
             {isCaller ? 'Calling...' : isRinging ? 'Incoming Call' : 'Connecting...'}
           </p>
@@ -32,12 +30,14 @@ const CallModal = ({
         <div className="flex justify-center space-x-4">
           {!isCaller && isRinging && (
             <>
-              <button
-                onClick={() => onAccept(true)}
-                className="p-3 bg-green-500 text-white rounded-full hover:bg-green-600"
-              >
-                <VideoCameraIcon className="h-6 w-6" />
-              </button>
+              {callData.isVideo && (
+                <button
+                  onClick={() => onAccept(true)}
+                  className="p-3 bg-green-500 text-white rounded-full hover:bg-green-600"
+                >
+                  <VideoCameraIcon className="h-6 w-6" />
+                </button>
+              )}
               <button
                 onClick={() => onAccept(false)}
                 className="p-3 bg-green-500 text-white rounded-full hover:bg-green-600"
@@ -48,7 +48,7 @@ const CallModal = ({
           )}
 
           <button
-            onClick={isCaller ? onEnd : onReject}
+            onClick={onReject}
             className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600"
           >
             <XMarkIcon className="h-6 w-6" />
