@@ -5,10 +5,10 @@ import IsLoading from "./configs/isLoading";
 import LoginSignupForm from "./pages/auth/LoginSignupForm";
 
 
-const Dashboard = lazy(() => import("@/layouts/Dashboard.jsx"));
-const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword.jsx"));
-const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword.jsx"));
-const Home = lazy(() => import("@/pages/home/Home.jsx"));
+const Dashboard = lazy(() => import("@/layouts/Dashboard"));
+const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
+const Home = lazy(() => import("@/pages/home/Home"));
 
 function App() {
   return (
