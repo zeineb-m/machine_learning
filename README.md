@@ -86,7 +86,9 @@ src/
 ├── pages/
 ├── api/
 ├── context/
-├── redux/ (if used)
+├── config/
+├── Widgetd/
+├── Layouts/
 ├── styles/
 └── App.jsx
 🔐 Authentication & Authorization
