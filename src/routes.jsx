@@ -26,6 +26,7 @@ import Claims from "./pages/dashboard/claims/Claims";
 import ClaimsList from "./pages/dashboard/claims/ClaimsList";
 
 
+import PredictionPage from "./pages/ml/PredictResults";
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
@@ -59,6 +60,18 @@ export const RoutesComponent = () => {
     {
       layout: "dashboard",
       pages: [
+          {
+          icon: <ChartBarIcon {...icon} />,
+          name: "Prédiction",
+          path: "/prediction", // Chemin vers la page de prédiction
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <PredictionPage />
+              </motion.div>
+            </Suspense>
+          ),
+        },
         {
           icon: <HomeIcon {...icon} />,
           name: "Dashboard",
