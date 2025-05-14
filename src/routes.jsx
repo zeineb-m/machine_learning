@@ -11,8 +11,9 @@ import {
   ChartBarIcon,
   ClipboardIcon,
   FolderIcon,
-  ChatBubbleBottomCenterTextIcon , 
-  ExclamationCircleIcon
+  ChatBubbleBottomCenterTextIcon,
+  ExclamationCircleIcon,
+  MagnifyingGlassCircleIcon // Added for anomaly detection
 } from "@heroicons/react/24/solid";
 
 import IsLoading from "./configs/isLoading";
@@ -25,8 +26,8 @@ import Conversation from "./pages/dashboard/conversation/Conversation";
 import Claims from "./pages/dashboard/claims/Claims";
 import ClaimsList from "./pages/dashboard/claims/ClaimsList";
 
-
 import PredictionPage from "./pages/ml/PredictResults";
+import AnomalyDetection from "./pages/ml/AnomalyDetection"; 
 
 const Home = lazy(() => import("@/pages/dashboard/Home"));
 const Profile = lazy(() => import("@/pages/dashboard/profile/profile"));
@@ -68,6 +69,18 @@ export const RoutesComponent = () => {
             <Suspense fallback={<IsLoading />}>
               <motion.div {...fadeInTransition}>
                 <PredictionPage />
+              </motion.div>
+            </Suspense>
+          ),
+        },
+        {
+          icon: <MagnifyingGlassCircleIcon {...icon} />,
+          name: "Détection d'Anomalies",
+          path: "/anomaly-detection", // Path to anomaly detection page
+          element: (
+            <Suspense fallback={<IsLoading />}>
+              <motion.div {...fadeInTransition}>
+                <AnomalyDetection />
               </motion.div>
             </Suspense>
           ),
@@ -314,21 +327,20 @@ export const hiddenRoutes = [
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <BudgetVariance />
-</motion.div>
+        </motion.div>
       </Suspense>
-)
-},
+    )
+  },
   {
-
     path: "/finance/:projectId",
     element: (
       <Suspense fallback={<IsLoading />}>
         <motion.div {...fadeInTransition}>
           <EvaluationSolvabilite />
-  </motion.div>
+        </motion.div>
       </Suspense>
-)
-}, 
+    )
+  }, 
   {
     path: "/balance-general/:projectId",
     element: (
@@ -349,7 +361,6 @@ export const hiddenRoutes = [
       </Suspense>
     ),
   }
-
 ];
 
 export default RoutesComponent;
