@@ -322,4 +322,8 @@ app.get('/health', (req, res) => {
   });
 });
 
+import AnomalyRoutes from './routes/anomaly.js';
+app.use('/api/anomaly', AnomalyRoutes);
+
+
 export { io };
